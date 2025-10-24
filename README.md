@@ -28,11 +28,12 @@ text2sql/
 │   ├── openai_client.py     # OpenAI integration
 │   └── models.py            # Pydantic models for request/response
 ├── tests/
+│   ├── __init__.py
 │   ├── test_api.py
 │   ├── test_database.py
 │   └── test_openai.py
 ├── data/
-│   └── database.db          # SQLite database
+│   └── .gitkeep             # Placeholder until the database is created
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
