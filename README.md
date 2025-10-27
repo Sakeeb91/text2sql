@@ -145,27 +145,37 @@ Health check endpoint to verify the API is running.
 }
 ```
 
-## Usage Examples
+## Query Playbook
 
-### Example 1: Count Query
+The following prompts highlight common analysis tasks supported by the seeded dataset:
+
+### Counting & Aggregations
+- "How many customers are in the database?"
+- "What is the total revenue?"
+- "How many orders were placed last month?"
+
+### Filtering & Segmentation
+- "List all customers from New York."
+- "Show orders above $500."
+- "List customers who joined in 2024."
+
+### Grouping & Sorting
+- "Top 10 customers by revenue."
+- "Products sorted by popularity."
+- "Monthly sales trends."
+
+### Operational Insights
+- "Which customer has placed the most orders?"
+- "What are the top 5 selling products?"
+- "Show me the average order value by customer."
+- "How many new customers joined last week?"
+
+Each question can be issued via `POST /query`:
+
 ```bash
 curl -X POST "http://localhost:8000/query" \
   -H "Content-Type: application/json" \
-  -d '{"question": "How many total orders do we have?"}'
-```
-
-### Example 2: Aggregation Query
-```bash
-curl -X POST "http://localhost:8000/query" \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Show me the number of orders per customer"}'
-```
-
-### Example 3: Filtering Query
-```bash
-curl -X POST "http://localhost:8000/query" \
-  -H "Content-Type: application/json" \
-  -d '{"question": "List all customers from New York"}'
+  -d '{"question": "How many customers are in the database?"}'
 ```
 
 ## Security Features
@@ -177,15 +187,57 @@ curl -X POST "http://localhost:8000/query" \
 
 ## Testing
 
-Run the test suite:
+The repository ships with unit, integration, and end-to-end test suites. Pytest is configured to collect coverage automatically (see `pytest.ini`).
+
+### Quick Start
 ```bash
-pytest tests/ -v
+# Run the full test matrix with coverage enforcement (>=85%)
+pytest
 ```
 
-Run tests with coverage:
+### Focused Suites
 ```bash
-pytest tests/ --cov=app --cov-report=html
+# Unit tests
+pytest tests/test_models.py tests/test_main.py tests/test_openai.py -v
+
+# Integration flow tests
+pytest tests/test_integration.py -v
+
+# End-to-end scenarios and performance checks
+pytest tests/test_e2e.py -v
 ```
+
+### Coverage Reports
+```bash
+# Terminal summary with missing lines
+pytest --cov=app --cov-report=term-missing
+
+# Generate HTML coverage artifacts
+pytest --cov=app --cov-report=html
+open htmlcov/index.html
+```
+
+Key coverage targets:
+- `app/database.py`: 100%
+- `app/openai_client.py`: >90%
+- `app/main.py`: >85%
+- `app/models.py`: 100%
+
+## API Testing with Postman
+
+A ready-to-use Postman collection is available at `docs/text2sql-api.postman_collection.json`. Import it to exercise:
+- Health check request
+- Representative query prompts (happy-path and error scenarios)
+- Environment variable placeholders for `OPENAI_API_KEY` and API base URL
+
+## Performance Benchmarks
+
+Automated end-to-end tests assert the following baseline targets:
+- Query generation and execution: <3 seconds (wall-clock)
+- Database reads: <500ms for seeded dataset queries
+- FastAPI startup: <10 seconds on a typical developer laptop
+
+These checks run as part of `tests/test_e2e.py`. Use `pytest -k performance` (or run the file directly) to monitor regressions.
 
 ## Database Schema
 
