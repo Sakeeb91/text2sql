@@ -159,3 +159,142 @@ def test_generate_sql_query_with_realistic_schema(openai_client_module, monkeypa
 
     assert openai_client_module.validate_query_is_read_only(result)
     assert "orders" in result.lower()
+
+
+def test_extract_text_from_response_output_fallback(openai_client_module):
+    """Ensure _extract_text_from_response handles streaming output structures."""
+
+    class AltResponse:
+        output_text = None
+
+        def __init__(self) -> None:
+            content = SimpleNamespace(text="payload")
+            self.output = [SimpleNamespace(content=[content])]
+
+    extracted = openai_client_module._extract_text_from_response(AltResponse())
+    assert extracted == "payload"
+
+
+def test_extract_text_from_response_no_text(openai_client_module):
+    """A response without text should raise a ValueError."""
+
+    class EmptyResponse:
+        output_text = None
+        output = []
+        choices = []
+
+    with pytest.raises(ValueError, match="did not include text"):
+        openai_client_module._extract_text_from_response(EmptyResponse())
+
+
+def test_extract_text_from_response_skips_invalid_chunks(openai_client_module):
+    """Non-iterable content chunks should be ignored."""
+
+    class MixedResponse:
+        output_text = None
+
+        def __init__(self) -> None:
+            valid_content = SimpleNamespace(text="payload")
+            self.output = [
+                SimpleNamespace(content=None),
+                SimpleNamespace(content=[valid_content]),
+            ]
+
+    extracted = openai_client_module._extract_text_from_response(MixedResponse())
+    assert extracted == "payload"
+
+
+def test_generate_sql_query_missing_responses_api(openai_client_module, monkeypatch):
+    """Ensure a helpful error is raised when the Responses API is unavailable."""
+    monkeypatch.setattr(openai_client_module, "client", SimpleNamespace())
+
+    with pytest.raises(RuntimeError, match="does not expose the Responses API"):
+        openai_client_module.generate_sql_query("Question", "Schema")
+
+
+def test_validate_query_read_only_multiple_statements(openai_client_module):
+    """Multiple statements should not pass the read-only guard."""
+    sql = "SELECT 1; SELECT 2;"
+    assert openai_client_module.validate_query_is_read_only(sql) is False
+
+
+def test_extract_text_from_response_choices(openai_client_module):
+    """Ensure choices fallback is used when provided."""
+
+    class ChoiceResponse:
+        output_text = None
+        output = []
+
+        def __init__(self) -> None:
+            self.choices = [SimpleNamespace(message={"content": "choice-content"})]
+
+    extracted = openai_client_module._extract_text_from_response(ChoiceResponse())
+    assert extracted == "choice-content"
+
+
+def test_extract_text_from_response_choices_text_field(openai_client_module):
+    """Support choices that expose plain text fields."""
+
+    class ChoiceResponse:
+        output_text = None
+        output = []
+
+        def __init__(self) -> None:
+            self.choices = [SimpleNamespace(message=None, text="inline-text")]
+
+    extracted = openai_client_module._extract_text_from_response(ChoiceResponse())
+    assert extracted == "inline-text"
+
+
+def test_validate_query_is_read_only_non_string(openai_client_module):
+    """Non-string inputs should be rejected."""
+    assert openai_client_module.validate_query_is_read_only(None) is False
+
+
+def test_validate_query_is_read_only_comments(openai_client_module):
+    """Statements resolving to empty strings after stripping comments are invalid."""
+    assert openai_client_module.validate_query_is_read_only("-- comment only") is False
+
+
+def test_validate_query_is_read_only_disallowed_keyword(openai_client_module):
+    """Disallowed SQL verbs embedded in the statement should fail validation."""
+    sql = "SELECT note FROM audit_logs WHERE note LIKE 'update';"
+    assert openai_client_module.validate_query_is_read_only(sql) is False
+
+
+def test_generate_sql_query_empty_question(openai_client_module):
+    """Blank questions should fail validation before hitting OpenAI."""
+    with pytest.raises(ValueError, match="non-empty string"):
+        openai_client_module.generate_sql_query("   ", "schema")
+
+
+def test_generate_sql_query_missing_sql_field(openai_client_module, monkeypatch):
+    """Responses without an sql field should raise a ValueError."""
+
+    def fake_create(**_kwargs):
+        return DummyResponse(json.dumps({"not_sql": "value"}))
+
+    monkeypatch.setattr(
+        openai_client_module,
+        "client",
+        SimpleNamespace(responses=SimpleNamespace(create=fake_create)),
+    )
+
+    with pytest.raises(ValueError, match="did not contain a SQL query"):
+        openai_client_module.generate_sql_query("List customers", "Schema info")
+
+
+def test_generate_sql_query_not_read_only(openai_client_module, monkeypatch):
+    """Generated SQL must pass the read-only validation guard."""
+
+    def fake_create(**_kwargs):
+        return DummyResponse(json.dumps({"sql": "DELETE FROM customers"}))
+
+    monkeypatch.setattr(
+        openai_client_module,
+        "client",
+        SimpleNamespace(responses=SimpleNamespace(create=fake_create)),
+    )
+
+    with pytest.raises(ValueError, match="not read-only"):
+        openai_client_module.generate_sql_query("Delete customers", "schema")
