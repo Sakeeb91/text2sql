@@ -7,6 +7,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Generator, Iterable
 
+from dotenv import load_dotenv
 from sqlalchemy import (
     Column,
     DateTime,
@@ -28,6 +29,9 @@ from sqlalchemy.orm import Session, sessionmaker
 
 DATA_DIR = Path("data")
 DATABASE_FILE = DATA_DIR / "database.db"
+
+# Load environment variables so DATABASE_URL can be sourced from .env files during scripts/tests.
+load_dotenv(override=False)
 
 # Default to a local SQLite database stored under data/
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATABASE_FILE.resolve().as_posix()}")
@@ -124,13 +128,14 @@ def _ensure_data_directory(path: Path) -> None:
 
 
 def _seed_sample_data(db_engine: Engine) -> None:
-    """Populate the database with deterministic sample data when empty."""
+    """Populate the database with deterministic sample data when both tables are empty."""
     customer_rows = list(_build_customers_seed())
     order_rows = list(_build_orders_seed())
 
     with db_engine.begin() as connection:
         customer_count = connection.execute(select(func.count()).select_from(customers_table)).scalar_one()
-        if customer_count:
+        order_count = connection.execute(select(func.count()).select_from(orders_table)).scalar_one()
+        if customer_count or order_count:
             return
 
         connection.execute(customers_table.insert(), customer_rows)
