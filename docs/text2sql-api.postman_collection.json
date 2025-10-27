@@ -1,0 +1,85 @@
+{
+  "info": {
+    "name": "Text2SQL API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection for exercising the Text-to-SQL FastAPI service."
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Query - Total Customers",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"How many customers are in the database?\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/query",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Query - Error Scenario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Delete all customers\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/query",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "query"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "openAiKey",
+      "value": "{{OPENAI_API_KEY}}"
+    }
+  ]
+}
