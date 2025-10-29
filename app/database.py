@@ -1,4 +1,4 @@
-"""Database layer bootstrap utilities."""
+"""Database layer utilities with deterministic sample data."""
 from __future__ import annotations
 
 import os
@@ -7,6 +7,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Generator, Iterable
 
+from dotenv import load_dotenv
 from sqlalchemy import (
     Column,
     DateTime,
@@ -25,19 +26,32 @@ from sqlalchemy import (
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool
 
 DATA_DIR = Path("data")
-DATABASE_FILE = DATA_DIR / "database.db"
+DEFAULT_DATABASE_FILE = DATA_DIR / "database.db"
+
+# Ensure environment variables from .env are available when scripts import this module directly.
+load_dotenv(dotenv_path=Path(__file__).resolve().parent.parent / ".env", override=False)
 
 # Default to a local SQLite database stored under data/
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATABASE_FILE.resolve().as_posix()}")
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DATABASE_FILE.resolve().as_posix()}")
+DATABASE_FILE = DEFAULT_DATABASE_FILE
+if DATABASE_URL.startswith("sqlite:///"):
+    DATABASE_FILE = Path(DATABASE_URL.replace("sqlite:///", ""))
 
 connect_args: dict[str, object] = {}
 if DATABASE_URL.startswith("sqlite"):
     # Needed for SQLite when used with FastAPI/SQLAlchemy in multi-threaded contexts.
     connect_args["check_same_thread"] = False
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+engine_kwargs: dict[str, Any] = {}
+if connect_args:
+    engine_kwargs["connect_args"] = connect_args
+if DATABASE_URL.startswith("sqlite"):
+    engine_kwargs["poolclass"] = NullPool
+
+engine = create_engine(DATABASE_URL, **engine_kwargs)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 metadata = MetaData()
@@ -79,7 +93,7 @@ def get_db() -> Generator[Session, None, None]:
 
 def init_db() -> None:
     """Create the database schema and seed sample data if needed."""
-    _ensure_data_directory(DATA_DIR)
+    _ensure_data_directory(DATABASE_FILE.parent)
     metadata.create_all(engine)
     _seed_sample_data(engine)
 
@@ -96,7 +110,7 @@ def execute_query(sql: str) -> list[dict[str, Any]]:
             if not result.returns_rows:
                 return []
             return [dict(row) for row in result.mappings().all()]
-    except SQLAlchemyError as exc:
+    except SQLAlchemyError as exc:  # pragma: no cover - defensive catch
         raise DatabaseExecutionError("Failed to execute SQL query.") from exc
 
 
@@ -124,13 +138,14 @@ def _ensure_data_directory(path: Path) -> None:
 
 
 def _seed_sample_data(db_engine: Engine) -> None:
-    """Populate the database with deterministic sample data when empty."""
+    """Populate the database with deterministic sample data when both tables are empty."""
     customer_rows = list(_build_customers_seed())
     order_rows = list(_build_orders_seed())
 
     with db_engine.begin() as connection:
         customer_count = connection.execute(select(func.count()).select_from(customers_table)).scalar_one()
-        if customer_count:
+        order_count = connection.execute(select(func.count()).select_from(orders_table)).scalar_one()
+        if customer_count or order_count:
             return
 
         connection.execute(customers_table.insert(), customer_rows)

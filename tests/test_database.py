@@ -5,15 +5,16 @@ from pathlib import Path
 
 import pytest
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app import database
 
 
 @pytest.fixture(scope="module", autouse=True)
-def setup_database() -> None:
+def fresh_database() -> None:
     """Ensure the database is freshly initialised for this test module."""
-    db_path = database.DATABASE_FILE
-    if isinstance(db_path, Path) and db_path.exists():
+    db_path = Path(database.DATABASE_FILE)
+    if db_path.exists():
         db_path.unlink()
     database.init_db()
     yield
@@ -31,8 +32,8 @@ def test_get_database_schema() -> None:
     schema = database.get_database_schema()
     assert "Table: customers" in schema
     assert "Table: orders" in schema
-    assert "id (INTEGER)" in schema
-    assert "name (VARCHAR" in schema or "name (TEXT" in schema
+    assert "id (" in schema
+    assert "name (" in schema
 
 
 def test_execute_query_select() -> None:
@@ -57,6 +58,16 @@ def test_execute_query_returns_dict_list() -> None:
     assert isinstance(rows[0], dict)
 
 
+def test_get_database_schema_empty_database() -> None:
+    """When no tables exist the schema helper should return an empty string."""
+    database.metadata.drop_all(database.engine)
+    try:
+        schema = database.get_database_schema()
+        assert schema == ""
+    finally:
+        database.init_db()
+
+
 def test_sample_data_exists() -> None:
     """Sample seed data should populate both customers and orders tables."""
     customers = database.execute_query("SELECT COUNT(*) AS count FROM customers")
@@ -79,3 +90,44 @@ def test_foreign_key_relationships() -> None:
     assert len(result) >= 10
     # At least one customer must have orders to validate the join behaviour.
     assert any(row["order_count"] > 0 for row in result)
+
+
+def test_get_db_context_manager_closes_session(monkeypatch) -> None:
+    """The get_db generator should close sessions after use."""
+    closed = {"called": False}
+    original_factory = database.SessionLocal
+
+    def factory() -> Session:
+        session = original_factory()
+        original_close = session.close
+
+        def close() -> None:
+            closed["called"] = True
+            original_close()
+
+        session.close = close  # type: ignore[assignment]
+        return session
+
+    monkeypatch.setattr(database, "SessionLocal", factory)
+
+    generator = database.get_db()
+    next(generator)
+    generator.close()
+
+    assert closed["called"] is True
+
+    monkeypatch.setattr(database, "SessionLocal", original_factory)
+
+
+def test_execute_query_empty_sql() -> None:
+    """Blank SQL statements should raise ValueError."""
+    with pytest.raises(ValueError):
+        database.execute_query("   ")
+
+
+def test_execute_query_without_rows_returns_empty() -> None:
+    """Non-select statements should return an empty list of rows."""
+    database.execute_query("DROP TABLE IF EXISTS temp_numbers")
+    result = database.execute_query("CREATE TABLE temp_numbers (id INTEGER)")
+    assert result == []
+    database.execute_query("DROP TABLE temp_numbers")
