@@ -1,7 +1,8 @@
 """Pydantic models shared across the application."""
+
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -24,7 +25,7 @@ class QueryResponse(BaseModel):
 
     question: str
     sql_query: str
-    results: List[Dict[str, Any]] = Field(default_factory=list)
+    results: list[dict[str, Any]] = Field(default_factory=list)
     success: bool = True
     error: Optional[str] = None
 

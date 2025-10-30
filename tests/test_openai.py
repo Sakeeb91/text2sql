@@ -1,4 +1,5 @@
 """Tests for the OpenAI SQL generation client."""
+
 from __future__ import annotations
 
 import importlib
@@ -153,9 +154,7 @@ def test_generate_sql_query_with_realistic_schema(openai_client_module, monkeypa
     Table: orders (id INTEGER, customer_id INTEGER, product_name TEXT, quantity INTEGER, total_amount DECIMAL, order_date TIMESTAMP)
     """
 
-    result = openai_client_module.generate_sql_query(
-        "How many orders were placed in the last 30 days?", schema
-    )
+    result = openai_client_module.generate_sql_query("How many orders were placed in the last 30 days?", schema)
 
     assert openai_client_module.validate_query_is_read_only(result)
     assert "orders" in result.lower()

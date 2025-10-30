@@ -1,4 +1,5 @@
 """API integration tests (placeholder for future phases)."""
+
 import pytest
 
 pytestmark = pytest.mark.skip(reason="API implementation arrives in Phase 4.")

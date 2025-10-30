@@ -1,0 +1,319 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop, "issue/**", "docs/**" ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: "3.11"
+  MIN_COVERAGE: 85
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black mypy bandit safety
+          pip install -r requirements.txt
+
+      - name: Run Ruff linter
+        run: |
+          ruff check . --output-format=github
+        continue-on-error: false
+
+      - name: Check code formatting with Black
+        run: |
+          black --check --diff .
+        continue-on-error: false
+
+      - name: Type checking with mypy
+        run: |
+          mypy app/ --ignore-missing-imports --no-strict-optional
+        continue-on-error: true  # Advisory for now
+
+      - name: Security check with Bandit
+        run: |
+          bandit -r app/ -f json -o bandit-report.json || true
+          bandit -r app/ -ll
+        continue-on-error: true  # Advisory for now
+
+      - name: Check for dependency vulnerabilities
+        run: |
+          safety check --json || true
+          safety check --bare
+        continue-on-error: true  # Advisory for now
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+
+  test-matrix:
+    name: Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        os: [ubuntu-latest]
+        include:
+          - python-version: "3.11"
+            os: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          pytest -v --cov=app --cov-report=xml --cov-report=term-missing
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'sk-test-key-for-ci' }}
+
+      - name: Check coverage threshold
+        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        run: |
+          coverage report --fail-under=${{ env.MIN_COVERAGE }}
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+        continue-on-error: true
+
+  api-contract-validation:
+    name: API Contract Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start FastAPI server
+        run: |
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'sk-test-key-for-ci' }}
+
+      - name: Validate OpenAPI schema is accessible
+        run: |
+          curl -f http://localhost:8000/openapi.json -o openapi.json
+          cat openapi.json
+
+      - name: Test health endpoint
+        run: |
+          response=$(curl -s http://localhost:8000/health)
+          echo "Health response: $response"
+          echo $response | grep -q "ok"
+
+      - name: Test API endpoints structure
+        run: |
+          # Test query endpoint accepts POST
+          curl -f -X POST http://localhost:8000/query \
+            -H "Content-Type: application/json" \
+            -d '{"question": "How many customers?"}' \
+            -o response.json || true
+          cat response.json
+
+      - name: Upload OpenAPI schema
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-schema
+          path: openapi.json
+
+  database-integrity:
+    name: Database Layer Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Test database initialization
+        run: |
+          python -c "from app.database import init_db; init_db(); print('✓ Database initialized')"
+
+      - name: Test schema inspection
+        run: |
+          python -c "from app.database import get_database_schema; schema = get_database_schema(); assert 'customers' in schema; assert 'orders' in schema; print('✓ Schema inspection works')"
+
+      - name: Test query execution
+        run: |
+          python -c "from app.database import execute_query; result = execute_query('SELECT COUNT(*) as count FROM customers'); assert result[0]['count'] >= 10; print('✓ Query execution works')"
+
+      - name: Run database-specific tests
+        run: |
+          pytest tests/test_database.py -v
+
+  performance-check:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Advisory only
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run performance tests
+        run: |
+          pytest tests/test_e2e.py::test_query_performance -v
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'sk-test-key-for-ci' }}
+
+  documentation-validation:
+    name: Documentation Validation
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.changed_files, 'docs/') || contains(github.event.pull_request.changed_files, 'README.md')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Markdown files
+        uses: articulate/actions-markdownlint@v1
+        continue-on-error: true
+        with:
+          config: .markdownlint.json
+          files: '**/*.md'
+          ignore: node_modules
+
+      - name: Validate links in documentation
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        continue-on-error: true
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'no'
+
+  pr-summary:
+    name: PR Summary Comment
+    runs-on: ubuntu-latest
+    needs: [code-quality, test-matrix, api-contract-validation, database-integrity]
+    if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Comment PR with results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const summary = `## 🤖 CI Pipeline Results
+
+            ### ✅ Required Checks
+            - **Code Quality**: ${{ needs.code-quality.result == 'success' && '✅ Passed' || '❌ Failed' }}
+            - **Tests (Matrix)**: ${{ needs.test-matrix.result == 'success' && '✅ Passed' || '❌ Failed' }}
+            - **API Contract**: ${{ needs.api-contract-validation.result == 'success' && '✅ Passed' || '❌ Failed' }}
+            - **Database Integrity**: ${{ needs.database-integrity.result == 'success' && '✅ Passed' || '❌ Failed' }}
+
+            ### 📊 Coverage
+            Coverage reports available in the test-matrix job artifacts.
+
+            ### 🔗 Useful Links
+            - [View detailed test results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - [OpenAPI Schema Artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ---
+            *This is an automated comment from the CI pipeline*
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+  all-checks-passed:
+    name: All Required Checks Passed
+    runs-on: ubuntu-latest
+    needs: [code-quality, test-matrix, api-contract-validation, database-integrity]
+    if: always()
+
+    steps:
+      - name: Check all required jobs
+        run: |
+          if [[ "${{ needs.code-quality.result }}" != "success" ]]; then
+            echo "❌ Code quality checks failed"
+            exit 1
+          fi
+          if [[ "${{ needs.test-matrix.result }}" != "success" ]]; then
+            echo "❌ Test matrix failed"
+            exit 1
+          fi
+          if [[ "${{ needs.api-contract-validation.result }}" != "success" ]]; then
+            echo "❌ API contract validation failed"
+            exit 1
+          fi
+          if [[ "${{ needs.database-integrity.result }}" != "success" ]]; then
+            echo "❌ Database integrity tests failed"
+            exit 1
+          fi
+          echo "✅ All required checks passed!"
