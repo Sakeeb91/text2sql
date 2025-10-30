@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  text2sql-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: text2sql-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Load from .env file or override with environment variables
+      - OPENAI_API_KEY=${OPENAI_API_KEY:?OPENAI_API_KEY is required}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/database.db}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - OPENAI_TEMPERATURE=${OPENAI_TEMPERATURE:-0.1}
+    volumes:
+      # Mount data directory for SQLite database persistence
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - text2sql-network
+
+networks:
+  text2sql-network:
+    driver: bridge
