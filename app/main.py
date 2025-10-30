@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import database, openai_client
 from app.models import HealthResponse, QueryRequest, QueryResponse
@@ -13,6 +14,18 @@ app = FastAPI(
     title="Text-to-SQL API",
     description="Convert natural language questions into SQL queries.",
     version="0.1.0",
+)
+
+# Add CORS middleware to allow Streamlit frontend to communicate with this backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:8501",  # Local Streamlit development
+        "https://*.streamlit.app",  # Streamlit Cloud apps
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
