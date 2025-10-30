@@ -1,60 +1,122 @@
 # Text-to-SQL Application
 
-A production-ready API that converts natural language questions into SQL queries using OpenAI's language models, FastAPI, and SQLite.
+A production-ready application that converts natural language questions into SQL queries using OpenAI's language models. Includes a FastAPI backend and a beautiful Streamlit web interface.
 
 ## Overview
 
-This application provides a RESTful API endpoint that accepts natural language questions and returns both the generated SQL query and its execution results. The system is designed with security in mind, generating only read-only SELECT queries to prevent unauthorized data modifications.
+This application consists of two components:
+
+1. **FastAPI Backend**: A RESTful API that accepts natural language questions and returns both the generated SQL query and its execution results.
+2. **Streamlit Frontend**: An interactive web interface for querying data using natural language.
+
+The system is designed with security in mind, generating only read-only SELECT queries to prevent unauthorized data modifications.
 
 ## Features
 
+### Backend API
 - **Natural Language to SQL**: Convert plain English questions into valid SQL queries
 - **Security-First Design**: Only SELECT queries are allowed; INSERT/UPDATE/DELETE operations are blocked
 - **RESTful API**: Clean, well-documented FastAPI endpoints
 - **Schema-Aware**: Automatically inspects database schema to generate context-aware queries
 - **Docker Support**: Fully containerized application with Docker Compose
-- **Persistent Storage**: SQLite database with volume mapping for data persistence
+- **CORS Enabled**: Ready for frontend integration
+
+### Frontend UI
+- **🔍 Interactive Web Interface**: Beautiful Streamlit-based UI
+- **📊 Live Results Display**: View query results in interactive tables
+- **📥 CSV Export**: Download results for further analysis
+- **💡 Example Questions**: Pre-loaded examples to get started quickly
+- **⚙️ API Configuration**: Easy backend URL configuration
+- **✅ Health Monitoring**: Real-time API status checking
 
 ## Architecture
 
-The application is built with a modular architecture:
+The application uses a modern client-server architecture:
+
+```
+┌─────────────────┐      HTTP/JSON      ┌──────────────────┐
+│   Streamlit     │ ──────────────────> │   FastAPI        │
+│   Frontend      │                     │   Backend        │
+│  (User Interface)│ <────────────────── │  (REST API)      │
+└─────────────────┘    Query Results    └──────────────────┘
+                                                 │
+                                                 ├─> SQLite Database
+                                                 └─> OpenAI API
+```
+
+### Project Structure
 
 ```
 text2sql/
-├── app/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI application
+├── app/                      # FastAPI Backend
+│   ├── main.py              # API endpoints + CORS
 │   ├── database.py          # Database layer with SQLAlchemy
 │   ├── openai_client.py     # OpenAI integration
-│   └── models.py            # Pydantic models for request/response
-├── tests/
-│   ├── __init__.py
-│   ├── test_api.py
-│   ├── test_database.py
-│   └── test_openai.py
-├── data/
-│   └── .gitkeep             # Placeholder until the database is created
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-├── .env.example
-└── README.md
+│   └── models.py            # Pydantic models
+├── streamlit_app/           # Streamlit Frontend
+│   ├── streamlit_app.py     # Web interface
+│   ├── requirements.txt     # Frontend dependencies
+│   └── .streamlit/
+│       └── config.toml      # Theme configuration
+├── tests/                   # Test suite
+├── docs/                    # Documentation
+├── Dockerfile               # Backend container
+├── docker-compose.yml       # Local development
+├── render.yaml             # Render deployment
+├── railway.json            # Railway deployment
+├── DEPLOYMENT.md           # Deployment guide
+└── requirements.txt        # Backend dependencies
 ```
 
 ## Technology Stack
 
+### Backend
 - **FastAPI**: Modern, fast web framework for building APIs
 - **Uvicorn**: ASGI server for running FastAPI applications
 - **SQLAlchemy**: SQL toolkit and ORM for database operations
 - **OpenAI API**: GPT-4o-mini model for natural language processing
 - **SQLite**: Lightweight, serverless database
 - **Pydantic**: Data validation using Python type annotations
-- **Docker**: Containerization and deployment
+
+### Frontend
+- **Streamlit**: Interactive web application framework
+- **Pandas**: Data manipulation and CSV export
+- **Requests**: HTTP client for API communication
+
+### DevOps
+- **Docker**: Containerization and local development
+- **GitHub Actions**: CI/CD pipeline with automated testing
+- **Render/Railway**: Cloud deployment platforms
+
+## Quick Start
+
+### Option 1: Try the Deployed App (Coming Soon)
+
+Once deployed, you can access:
+- **Web Interface**: Visit the Streamlit app URL
+- **API Endpoints**: Access the FastAPI backend directly
+
+### Option 2: Run Locally
+
+**Prerequisites:**
+- Python 3.9 or higher
+- OpenAI API key
+- Docker and Docker Compose (optional, for containerized deployment)
+
+See [Installation](#installation) below for detailed setup instructions.
+
+### Option 3: Deploy Your Own
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step guides to deploy on:
+- **Render** (recommended, free tier)
+- **Railway** (fast deployments, free tier)
+- **Fly.io** (global edge deployment)
+- **Streamlit Cloud** (frontend hosting, free)
 
 ## Prerequisites
 
 - Python 3.9 or higher
-- OpenAI API key
+- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 - Docker and Docker Compose (optional, for containerized deployment)
 
 ## Installation
@@ -84,10 +146,23 @@ cp .env.example .env
 # Edit .env and add your OpenAI API key
 ```
 
-5. Run the application:
+5. Run the backend API:
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+6. (Optional) Run the Streamlit frontend:
+```bash
+# In a new terminal
+cd streamlit_app
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+7. Access the application:
+   - **API**: http://localhost:8000
+   - **API Docs**: http://localhost:8000/docs
+   - **Streamlit UI**: http://localhost:8501 (if running)
 
 ### Docker Deployment
 
@@ -467,7 +542,9 @@ The application includes a sample database with the following tables:
 
 ## Configuration
 
-Environment variables in `.env`:
+### Backend Environment Variables
+
+Configure in `.env`:
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
@@ -476,14 +553,60 @@ OPENAI_MODEL=gpt-4o-mini
 OPENAI_TEMPERATURE=0.1
 ```
 
+### Frontend Environment Variables
+
+For Streamlit deployment:
+
+```env
+API_URL=https://your-backend-url.onrender.com
+```
+
+## Cloud Deployment
+
+This project is ready to deploy to production! See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive guides.
+
+### Backend Deployment
+
+Deploy the FastAPI backend to:
+- **[Render](https://render.com)** - Uses `render.yaml` (free tier available)
+- **[Railway](https://railway.app)** - Uses `railway.json` (free tier available)
+- **[Fly.io](https://fly.io)** - Manual setup (free tier available)
+- **Docker** - Any platform supporting Docker containers
+
+### Frontend Deployment
+
+Deploy the Streamlit UI to:
+- **[Streamlit Cloud](https://streamlit.io/cloud)** - Free hosting for Streamlit apps
+
+### Quick Deploy Steps
+
+1. **Deploy Backend** (choose one platform):
+   ```bash
+   # Render: Connect GitHub repo, auto-detects render.yaml
+   # Railway: Connect GitHub repo, auto-detects railway.json
+   # Fly.io: flyctl launch && flyctl deploy
+   ```
+
+2. **Deploy Frontend**:
+   ```bash
+   # Streamlit Cloud: Connect GitHub, point to streamlit_app/streamlit_app.py
+   # Set API_URL environment variable to your backend URL
+   ```
+
+3. **Done!** Your app is live 🚀
+
+Full instructions in [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Development Roadmap
 
-- [ ] Phase 1: Project Setup & Configuration
-- [ ] Phase 2: Database Layer Implementation
-- [ ] Phase 3: OpenAI Integration
-- [ ] Phase 4: FastAPI Application
-- [ ] Phase 5: Containerization
-- [ ] Phase 6: Testing & Documentation
+- [x] Phase 1: Project Setup & Configuration
+- [x] Phase 2: Database Layer Implementation
+- [x] Phase 3: OpenAI Integration
+- [x] Phase 4: FastAPI Application
+- [x] Phase 5: Containerization
+- [x] Phase 6: Testing & Documentation
+- [x] Phase 7: Streamlit Frontend
+- [x] Phase 8: Cloud Deployment Configurations
 
 ## Contributing
 
@@ -504,6 +627,25 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Based on the article: [Creating a Text-to-SQL App with OpenAI, FastAPI, SQLite](https://www.kdnuggets.com/creating-a-text-to-sql-app-with-openai-fastapi-sqlite)
 - OpenAI for their powerful language models
 - FastAPI community for the excellent framework
+
+## Screenshots
+
+### Streamlit Web Interface
+*(Add screenshots after deployment)*
+
+### API Documentation
+Access interactive API docs at `/docs`:
+- Swagger UI with try-it-out functionality
+- Complete request/response schemas
+- Example queries and responses
+
+## Project Documentation
+
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide for all platforms
+- **[CLAUDE.md](CLAUDE.md)** - Developer guide for Claude Code
+- **[docs/database.md](docs/database.md)** - Database layer documentation
+- **[docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md)** - CI/CD setup and workflows
+- **[streamlit_app/README.md](streamlit_app/README.md)** - Frontend-specific documentation
 
 ## Support
 
