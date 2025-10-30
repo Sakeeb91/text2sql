@@ -198,6 +198,7 @@ def main():
 
                     # Download button
                     import pandas as pd
+
                     df = pd.DataFrame(results)
                     csv = df.to_csv(index=False)
                     st.download_button(
