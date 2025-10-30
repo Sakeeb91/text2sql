@@ -1,4 +1,5 @@
 """Database layer utilities with deterministic sample data."""
+
 from __future__ import annotations
 
 import os

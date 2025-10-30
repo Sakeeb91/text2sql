@@ -1,4 +1,5 @@
 """Integration tests covering the FastAPI query workflow."""
+
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -15,14 +16,11 @@ def stubbed_openai(monkeypatch) -> Iterator[None]:
     mapping = {
         "how many customers are in the database?": "SELECT COUNT(*) AS total_customers FROM customers;",
         "list all orders with customer names": (
-            "SELECT c.name, o.product_name FROM customers c "
-            "JOIN orders o ON c.id = o.customer_id;"
+            "SELECT c.name, o.product_name FROM customers c " "JOIN orders o ON c.id = o.customer_id;"
         ),
         "what is the total revenue?": "SELECT SUM(total_amount) AS total_revenue FROM orders;",
         "how many customers?": "SELECT COUNT(*) AS total_customers FROM customers;",
-        "show me the things": (
-            "SELECT name FROM customers WHERE city IS NOT NULL ORDER BY created_at DESC LIMIT 5;"
-        ),
+        "show me the things": ("SELECT name FROM customers WHERE city IS NOT NULL ORDER BY created_at DESC LIMIT 5;"),
     }
 
     def fake_generate(question: str, schema: str) -> str:
