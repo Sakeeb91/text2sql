@@ -91,16 +91,223 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ### Docker Deployment
 
-1. Clone the repository and navigate to the project directory
+Docker provides a consistent, isolated environment for running the application. The setup includes automatic database persistence, health checks, and easy configuration.
+
+#### Prerequisites
+
+- Docker Engine 20.10+ ([Install Docker](https://docs.docker.com/get-docker/))
+- Docker Compose 2.0+ (included with Docker Desktop)
+
+#### Quick Start
+
+1. Clone the repository and navigate to the project directory:
+```bash
+git clone https://github.com/Sakeeb91/text2sql.git
+cd text2sql
+```
 
 2. Create `.env` file with your OpenAI API key:
 ```bash
-echo "OPENAI_API_KEY=your_api_key_here" > .env
+cp .env.example .env
+# Edit .env and add your OpenAI API key
 ```
 
 3. Build and run with Docker Compose:
 ```bash
 docker-compose up --build
+```
+
+4. Access the application:
+   - API: http://localhost:8000
+   - Swagger UI: http://localhost:8000/docs
+   - Health Check: http://localhost:8000/health
+
+#### Docker Commands
+
+```bash
+# Build and start in detached mode
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f text2sql-api
+
+# Stop the application
+docker-compose down
+
+# Stop and remove volumes (deletes database)
+docker-compose down -v
+
+# Restart the application
+docker-compose restart
+
+# Check container status and health
+docker-compose ps
+```
+
+#### Volume Persistence
+
+The SQLite database is stored in `./data` and persists across container restarts:
+
+```bash
+# Database location on host
+./data/database.db
+
+# Mounted to container
+/app/data/database.db
+```
+
+**Important**: Don't delete the `./data` directory unless you want to reset the database.
+
+#### Environment Variables
+
+Configure the application using environment variables in `.env`:
+
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `OPENAI_API_KEY` | Your OpenAI API key | - | ✅ Yes |
+| `DATABASE_URL` | Database connection string | `sqlite:///./data/database.db` | No |
+| `OPENAI_MODEL` | OpenAI model to use | `gpt-4o-mini` | No |
+| `OPENAI_TEMPERATURE` | Model temperature (0-2) | `0.1` | No |
+
+#### Health Checks
+
+The container includes automatic health checks that run every 30 seconds:
+
+```bash
+# Check health status
+docker inspect --format='{{.State.Health.Status}}' text2sql-api
+
+# View health check history
+docker inspect text2sql-api | grep -A 10 Health
+```
+
+Health check statuses:
+- `starting`: Container is starting up (first 40 seconds)
+- `healthy`: Application is responding correctly
+- `unhealthy`: Application failed health check (container will restart)
+
+#### Resource Requirements
+
+Minimum requirements:
+- **CPU**: 1 core
+- **Memory**: 512MB
+- **Disk**: 200MB (plus database size)
+
+Recommended for production:
+- **CPU**: 2 cores
+- **Memory**: 1GB
+- **Disk**: 1GB
+
+#### Production Deployment
+
+For production environments, consider:
+
+1. **Use a production database**: Replace SQLite with PostgreSQL or MySQL
+   ```yaml
+   environment:
+     - DATABASE_URL=postgresql://user:pass@host:5432/dbname
+   ```
+
+2. **Add nginx reverse proxy**: For SSL/TLS termination and load balancing
+
+3. **Enable Docker secrets**: For sensitive environment variables
+   ```yaml
+   secrets:
+     - openai_api_key
+   ```
+
+4. **Implement logging**: Configure log aggregation
+   ```yaml
+   logging:
+     driver: "json-file"
+     options:
+       max-size: "10m"
+       max-file: "3"
+   ```
+
+5. **Add monitoring**: Use tools like Prometheus, Grafana, or DataDog
+
+#### Troubleshooting
+
+##### Port Already in Use
+
+**Error**: `Bind for 0.0.0.0:8000 failed: port is already allocated`
+
+**Solution**: Change the port mapping in `docker-compose.yml`:
+```yaml
+ports:
+  - "8001:8000"  # Use port 8001 instead
+```
+
+##### Container Exits Immediately
+
+**Solution**: Check the logs for errors:
+```bash
+docker-compose logs text2sql-api
+```
+
+Common causes:
+- Missing `OPENAI_API_KEY` in `.env`
+- Syntax error in `.env` file
+- Port conflict
+
+##### Database Permission Errors
+
+**Error**: `PermissionError: [Errno 13] Permission denied: '/app/data/database.db'`
+
+**Solution**: Fix directory permissions:
+```bash
+chmod 777 data/
+docker-compose restart
+```
+
+##### Build Failures
+
+**Solution**: Clear Docker cache and rebuild:
+```bash
+docker-compose down
+docker-compose build --no-cache
+docker-compose up
+```
+
+##### OpenAI API Errors
+
+**Error**: `Invalid API key` or `Rate limit exceeded`
+
+**Solution**:
+1. Verify API key in `.env` file
+2. Check API key validity at https://platform.openai.com/api-keys
+3. Ensure you have sufficient API credits
+
+#### Docker Image Details
+
+- **Base Image**: `python:3.11-slim`
+- **Image Size**: ~200MB (optimized with multi-stage build)
+- **User**: Non-root user (`appuser`) for security
+- **Exposed Ports**: 8000
+- **Working Directory**: `/app`
+
+#### Security Best Practices
+
+1. **Never commit `.env` files**: They contain sensitive API keys
+2. **Use Docker secrets** in production instead of environment variables
+3. **Run as non-root user**: Already configured in Dockerfile
+4. **Keep base images updated**: Regularly rebuild with latest Python security patches
+5. **Scan for vulnerabilities**: Use `docker scan text2sql-api`
+
+#### Testing in Docker
+
+Run tests inside the container:
+
+```bash
+# Build test image
+docker-compose -f docker-compose.test.yml build
+
+# Run tests
+docker-compose -f docker-compose.test.yml run test pytest
+
+# Run with coverage
+docker-compose -f docker-compose.test.yml run test pytest --cov=app
 ```
 
 ## API Documentation
