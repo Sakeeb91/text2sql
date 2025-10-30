@@ -225,7 +225,7 @@ jobs:
 
       - name: Run performance tests
         run: |
-          pytest tests/test_e2e.py::test_query_performance -v
+          pytest tests/test_e2e.py::test_query_performance -v --no-cov
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'sk-test-key-for-ci' }}
 
