@@ -1,7 +1,7 @@
 """Streamlit frontend for Text-to-SQL API."""
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import requests
 import streamlit as st
