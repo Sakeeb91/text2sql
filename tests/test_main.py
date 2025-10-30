@@ -1,4 +1,5 @@
 """Unit tests for the FastAPI application layer."""
+
 from __future__ import annotations
 
 from app import main as main_module

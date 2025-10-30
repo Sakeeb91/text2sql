@@ -1,4 +1,5 @@
 """OpenAI client utilities for generating read-only SQL queries."""
+
 from __future__ import annotations
 
 import json
@@ -144,4 +145,3 @@ def generate_sql_query(question: str, schema: str) -> str:
         raise ValueError("Generated SQL query is not read-only.")
 
     return sql_query.strip()
-
