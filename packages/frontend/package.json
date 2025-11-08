@@ -1,0 +1,28 @@
+{
+  "name": "@text2sql/frontend",
+  "version": "1.0.0",
+  "description": "Next.js frontend for Text-to-SQL application",
+  "scripts": {
+    "build": "echo 'Frontend build will be implemented in Phase 4'",
+    "dev": "echo 'Frontend dev server will be implemented in Phase 4'",
+    "clean": "rm -rf .next out",
+    "type-check": "echo 'Type checking will be implemented in Phase 4'",
+    "lint": "echo 'Linting will be implemented in Phase 4'",
+    "test": "echo 'Tests will be implemented in Phase 5'"
+  },
+  "keywords": [
+    "text2sql",
+    "frontend",
+    "nextjs",
+    "react"
+  ],
+  "author": "Sakeeb Rahman <rahman.sakeeb@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@text2sql/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
+

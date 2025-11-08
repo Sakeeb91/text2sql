@@ -29,7 +29,7 @@ You have three options for deploying the FastAPI backend:
 
 **Why Render?**
 - Free tier with persistent storage
-- Easy setup with `render.yaml`
+- Easy setup with `.deploy/render.yaml`
 - Automatic deployments from Git
 
 **Steps:**
@@ -39,7 +39,7 @@ You have three options for deploying the FastAPI backend:
 2. **Create a new Web Service:**
    - Click "New +" → "Web Service"
    - Connect your GitHub repository
-   - Render will auto-detect `render.yaml`
+   - Render will auto-detect `.deploy/render.yaml`
 
 3. **Set environment variables:**
    - Go to "Environment" tab
@@ -76,7 +76,7 @@ You have three options for deploying the FastAPI backend:
    - Click "New Project" → "Deploy from GitHub repo"
    - Select your repository
 
-3. **Railway auto-detects the config** from `railway.json`
+3. **Railway auto-detects the config** from `.deploy/railway.json`
 
 4. **Set environment variables:**
    - Go to "Variables" tab
