@@ -1,0 +1,29 @@
+{
+  "name": "@text2sql/backend",
+  "version": "1.0.0",
+  "description": "NestJS backend for Text-to-SQL application",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "echo 'Backend build will be implemented in Phase 3'",
+    "dev": "echo 'Backend dev server will be implemented in Phase 3'",
+    "clean": "rm -rf dist",
+    "type-check": "echo 'Type checking will be implemented in Phase 3'",
+    "lint": "echo 'Linting will be implemented in Phase 3'",
+    "test": "echo 'Tests will be implemented in Phase 5'"
+  },
+  "keywords": [
+    "text2sql",
+    "backend",
+    "nestjs",
+    "api"
+  ],
+  "author": "Sakeeb Rahman <rahman.sakeeb@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@text2sql/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
+
