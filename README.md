@@ -60,16 +60,11 @@ text2sql/
 │       └── config.toml      # Theme configuration
 ├── tests/                   # Test suite
 ├── docs/                    # Documentation
-├── .deploy/                 # Deployment configurations
-│   ├── render.yaml         # Render deployment
-│   ├── railway.json        # Railway deployment
-│   └── Procfile           # Heroku/generic deployment
-├── scripts/                 # Utility scripts
-│   ├── setup.sh            # Project setup
-│   ├── run_tests.sh        # Test runner
-│   └── deploy.sh           # Deployment helper
 ├── Dockerfile               # Backend container
 ├── docker-compose.yml       # Local development
+├── render.yaml             # Render deployment
+├── railway.json            # Railway deployment
+├── DEPLOYMENT.md           # Deployment guide
 └── requirements.txt        # Backend dependencies
 ```
 
@@ -112,7 +107,7 @@ See [Installation](#installation) below for detailed setup instructions.
 
 ### Option 3: Deploy Your Own
 
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for step-by-step guides to deploy on:
+See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step guides to deploy on:
 - **Render** (recommended, free tier)
 - **Railway** (fast deployments, free tier)
 - **Fly.io** (global edge deployment)
@@ -512,7 +507,7 @@ Key coverage targets:
 
 ## API Testing with Postman
 
-A ready-to-use Postman collection is available at `docs/postman/text2sql-api.postman_collection.json`. Import it to exercise:
+A ready-to-use Postman collection is available at `docs/text2sql-api.postman_collection.json`. Import it to exercise:
 - Health check request
 - Representative query prompts (happy-path and error scenarios)
 - Environment variable placeholders for `OPENAI_API_KEY` and API base URL
@@ -568,13 +563,13 @@ API_URL=https://your-backend-url.onrender.com
 
 ## Cloud Deployment
 
-This project is ready to deploy to production! See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for comprehensive guides.
+This project is ready to deploy to production! See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive guides.
 
 ### Backend Deployment
 
 Deploy the FastAPI backend to:
-- **[Render](https://render.com)** - Uses `.deploy/render.yaml` (free tier available)
-- **[Railway](https://railway.app)** - Uses `.deploy/railway.json` (free tier available)
+- **[Render](https://render.com)** - Uses `render.yaml` (free tier available)
+- **[Railway](https://railway.app)** - Uses `railway.json` (free tier available)
 - **[Fly.io](https://fly.io)** - Manual setup (free tier available)
 - **Docker** - Any platform supporting Docker containers
 
@@ -587,8 +582,8 @@ Deploy the Streamlit UI to:
 
 1. **Deploy Backend** (choose one platform):
    ```bash
-   # Render: Connect GitHub repo, auto-detects .deploy/render.yaml
-   # Railway: Connect GitHub repo, auto-detects .deploy/railway.json
+   # Render: Connect GitHub repo, auto-detects render.yaml
+   # Railway: Connect GitHub repo, auto-detects railway.json
    # Fly.io: flyctl launch && flyctl deploy
    ```
 
@@ -600,11 +595,9 @@ Deploy the Streamlit UI to:
 
 3. **Done!** Your app is live 🚀
 
-Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Full instructions in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Development Roadmap
-
-### Python/FastAPI (Current - Production Ready)
 
 - [x] Phase 1: Project Setup & Configuration
 - [x] Phase 2: Database Layer Implementation
@@ -614,17 +607,6 @@ Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 - [x] Phase 6: Testing & Documentation
 - [x] Phase 7: Streamlit Frontend
 - [x] Phase 8: Cloud Deployment Configurations
-
-### TypeScript/Node.js Migration (In Progress)
-
-- [x] Phase 1.1: Initialize TypeScript Monorepo (Issue #15)
-- [ ] Phase 2: AI Provider Abstraction Layer
-- [ ] Phase 3: NestJS Backend Implementation
-- [ ] Phase 4: Next.js Frontend Implementation
-- [ ] Phase 5: Testing & CI/CD
-- [ ] Phase 6: Documentation & Deployment
-
-See [MONOREPO.md](MONOREPO.md) for details on the TypeScript migration.
 
 ## Contributing
 
@@ -659,32 +641,11 @@ Access interactive API docs at `/docs`:
 
 ## Project Documentation
 
-- **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Complete deployment guide for all platforms
-- **[docs/CLAUDE.md](docs/CLAUDE.md)** - Developer guide for Claude Code
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide for all platforms
+- **[CLAUDE.md](CLAUDE.md)** - Developer guide for Claude Code
 - **[docs/database.md](docs/database.md)** - Database layer documentation
 - **[docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md)** - CI/CD setup and workflows
 - **[streamlit_app/README.md](streamlit_app/README.md)** - Frontend-specific documentation
-
-## Quick Start Scripts
-
-Use the helper scripts in `scripts/` for common tasks:
-
-```bash
-# Setup project (creates venv, installs dependencies)
-./scripts/setup.sh
-
-# Run tests
-./scripts/run_tests.sh
-
-# Run tests without coverage
-./scripts/run_tests.sh --no-cov
-
-# Deploy to specific platform
-./scripts/deploy.sh render     # Deploy to Render
-./scripts/deploy.sh railway    # Deploy to Railway
-./scripts/deploy.sh streamlit  # Deploy frontend
-./scripts/deploy.sh docker     # Run with Docker
-```
 
 ## Support
 
