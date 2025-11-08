@@ -1,35 +1,106 @@
 # Text-to-SQL Application
 
-A production-ready application that converts natural language questions into SQL queries using OpenAI's language models. Includes a FastAPI backend and a beautiful Streamlit web interface.
+A production-ready application that converts natural language questions into SQL queries using AI language models. Features a FastAPI backend, Streamlit web interface, and an in-progress TypeScript/NestJS migration for enhanced scalability and multi-provider AI support.
 
 ## Overview
 
-This application consists of two components:
+This project contains two implementations:
+
+### Python/FastAPI Stack (Production Ready ✅)
 
 1. **FastAPI Backend**: A RESTful API that accepts natural language questions and returns both the generated SQL query and its execution results.
 2. **Streamlit Frontend**: An interactive web interface for querying data using natural language.
 
 The system is designed with security in mind, generating only read-only SELECT queries to prevent unauthorized data modifications.
 
+### TypeScript/NestJS Stack (In Development 🚧)
+
+A modern TypeScript monorepo architecture with:
+- **NestJS Backend**: Modular backend with AI provider abstraction layer
+- **Next.js Frontend**: (Planned) Modern React-based UI
+- **Shared Types Package**: Type-safe contracts across the stack
+
+See [MONOREPO.md](MONOREPO.md) for details on the TypeScript migration.
+
+### Why Two Stacks?
+
+The project maintains both Python and TypeScript implementations to serve different needs:
+
+**Python/FastAPI Stack:**
+- ✅ Production-ready and fully tested
+- ✅ Quick to deploy and iterate
+- ✅ Excellent for data science and ML workflows
+- ✅ Simpler deployment with fewer dependencies
+
+**TypeScript/NestJS Stack:**
+- 🎯 Enterprise-grade scalability and maintainability
+- 🎯 Type safety across the entire stack
+- 🎯 Multi-provider AI support (OpenAI, Anthropic, custom)
+- 🎯 Modern frontend with Next.js
+- 🎯 Better suited for large teams and complex features
+
+Both implementations will coexist, allowing you to choose the stack that best fits your needs. The Python stack is recommended for immediate use, while the TypeScript stack is being developed for enhanced features and scalability.
+
 ## Features
 
-### Backend API
-- **Natural Language to SQL**: Convert plain English questions into valid SQL queries
-- **Security-First Design**: Only SELECT queries are allowed; INSERT/UPDATE/DELETE operations are blocked
-- **RESTful API**: Clean, well-documented FastAPI endpoints
-- **Schema-Aware**: Automatically inspects database schema to generate context-aware queries
-- **Docker Support**: Fully containerized application with Docker Compose
-- **CORS Enabled**: Ready for frontend integration
+### Core Features (Both Stacks)
 
-### Frontend UI
-- **🔍 Interactive Web Interface**: Beautiful Streamlit-based UI
-- **📊 Live Results Display**: View query results in interactive tables
-- **📥 CSV Export**: Download results for further analysis
-- **💡 Example Questions**: Pre-loaded examples to get started quickly
-- **⚙️ API Configuration**: Easy backend URL configuration
-- **✅ Health Monitoring**: Real-time API status checking
+**Natural Language to SQL Processing:**
+- Convert plain English questions into valid SQL queries using AI
+- Schema-aware query generation with automatic database inspection
+- Security-first design: only SELECT queries allowed
+- Comprehensive error handling and validation
+
+**API Capabilities:**
+- RESTful API with clean, well-documented endpoints
+- Auto-generated Swagger/OpenAPI documentation
+- CORS enabled for frontend integration
+- Health check endpoints for monitoring
+
+### Python/FastAPI Stack Features ✅
+
+**Backend:**
+- FastAPI with Uvicorn ASGI server
+- SQLAlchemy ORM with SQLite database
+- OpenAI GPT-4o-mini integration (Responses API)
+- 85%+ test coverage with pytest
+- Docker and Docker Compose support
+- GitHub Actions CI/CD with 7 parallel jobs
+
+**Frontend:**
+- 🔍 Interactive Streamlit web interface
+- 📊 Live results display in interactive tables
+- 📥 CSV export functionality
+- 💡 Pre-loaded example questions
+- ⚙️ Easy API configuration
+- ✅ Real-time API health monitoring
+
+### TypeScript/NestJS Stack Features 🚧
+
+**Backend (In Progress):**
+- NestJS modular architecture
+- TypeORM for database operations
+- AI Provider Abstraction Layer (multi-provider support)
+- Global exception filters and validation pipes
+- Swagger documentation auto-generation
+- Type-safe API contracts with shared types
+
+**Frontend (Planned):**
+- Next.js 14 with App Router
+- Server-side rendering for better performance
+- AI provider selector in UI
+- Modern, responsive design with Tailwind CSS
+- Type-safe API client with React Query
+
+**Shared Package (Completed):**
+- Centralized TypeScript type definitions
+- API request/response types
+- Database entity types
+- Schema metadata types
 
 ## Architecture
+
+### Python/FastAPI Architecture (Current Production)
 
 The application uses a modern client-server architecture:
 
@@ -39,43 +110,78 @@ The application uses a modern client-server architecture:
 │   Frontend      │                     │   Backend        │
 │  (User Interface)│ <────────────────── │  (REST API)      │
 └─────────────────┘    Query Results    └──────────────────┘
-                                                 │
-                                                 ├─> SQLite Database
-                                                 └─> OpenAI API
+                                                │
+                                                ├─> SQLite Database
+                                                └─> OpenAI API
+```
+
+### TypeScript Monorepo Architecture (In Development)
+
+```
+┌─────────────────┐      HTTP/JSON      ┌──────────────────┐
+│   Next.js       │ ──────────────────> │   NestJS         │
+│   Frontend      │                     │   Backend        │
+│  (Planned)      │ <────────────────── │  (In Progress)   │
+└─────────────────┘                     └──────────────────┘
+        │                                        │
+        │                                        ├─> TypeORM + Database
+        └────────────────────────────────────────┤
+                   @text2sql/shared              └─> AI Provider Layer
+                   (Shared Types ✅)                 (OpenAI, Anthropic, Custom)
 ```
 
 ### Project Structure
 
 ```
 text2sql/
-├── app/                      # FastAPI Backend
+├── app/                      # Python FastAPI Backend (Production)
 │   ├── main.py              # API endpoints + CORS
 │   ├── database.py          # Database layer with SQLAlchemy
 │   ├── openai_client.py     # OpenAI integration
 │   └── models.py            # Pydantic models
-├── streamlit_app/           # Streamlit Frontend
+├── streamlit_app/           # Streamlit Frontend (Production)
 │   ├── streamlit_app.py     # Web interface
 │   ├── requirements.txt     # Frontend dependencies
 │   └── .streamlit/
 │       └── config.toml      # Theme configuration
-├── tests/                   # Test suite
+├── packages/                # TypeScript Monorepo (In Development)
+│   ├── backend/            # NestJS backend (Phase 3)
+│   │   ├── src/
+│   │   │   ├── modules/    # Feature modules (health, query, ai-provider, database)
+│   │   │   ├── config/     # Configuration and validation
+│   │   │   ├── common/     # Shared utilities and filters
+│   │   │   ├── app.module.ts
+│   │   │   └── main.ts
+│   │   └── package.json
+│   ├── frontend/           # Next.js frontend (Phase 4 - Planned)
+│   │   └── package.json
+│   └── shared/             # Shared TypeScript types (Phase 1.1 ✅)
+│       ├── src/
+│       │   └── types/      # API and database types
+│       └── package.json
+├── tests/                   # Python test suite
 ├── docs/                    # Documentation
-├── .deploy/                 # Deployment configurations
-│   ├── render.yaml         # Render deployment
-│   ├── railway.json        # Railway deployment
-│   └── Procfile           # Heroku/generic deployment
+│   ├── DEPLOYMENT.md       # Deployment guide
+│   ├── CLAUDE.md           # Developer guide
+│   ├── database.md         # Database documentation
+│   └── ci-cd-pipeline.md   # CI/CD documentation
 ├── scripts/                 # Utility scripts
 │   ├── setup.sh            # Project setup
 │   ├── run_tests.sh        # Test runner
 │   └── deploy.sh           # Deployment helper
 ├── Dockerfile               # Backend container
 ├── docker-compose.yml       # Local development
-└── requirements.txt        # Backend dependencies
+├── pnpm-workspace.yaml      # TypeScript workspace config
+├── package.json             # Root monorepo scripts
+├── requirements.txt         # Python backend dependencies
+└── MONOREPO.md             # TypeScript migration guide
 ```
 
 ## Technology Stack
 
-### Backend
+### Python Stack (Production)
+
+**Backend:**
 - **FastAPI**: Modern, fast web framework for building APIs
 - **Uvicorn**: ASGI server for running FastAPI applications
 - **SQLAlchemy**: SQL toolkit and ORM for database operations
@@ -83,25 +189,44 @@ text2sql/
 - **SQLite**: Lightweight, serverless database
 - **Pydantic**: Data validation using Python type annotations
 
-### Frontend
+**Frontend:**
 - **Streamlit**: Interactive web application framework
 - **Pandas**: Data manipulation and CSV export
 - **Requests**: HTTP client for API communication
 
-### DevOps
+**DevOps:**
 - **Docker**: Containerization and local development
 - **GitHub Actions**: CI/CD pipeline with automated testing
 - **Render/Railway**: Cloud deployment platforms
 
+### TypeScript Stack (In Development)
+
+**Backend (NestJS):**
+- **NestJS**: Progressive Node.js framework with TypeScript
+- **TypeORM**: TypeScript-first ORM for database operations
+- **AI Provider Abstraction**: Multi-provider support (OpenAI, Anthropic, custom)
+- **Swagger/OpenAPI**: Auto-generated API documentation
+- **Class Validator**: Request validation with decorators
+
+**Frontend (Planned):**
+- **Next.js 14**: React framework with App Router
+- **TypeScript**: Type-safe frontend development
+- **Tailwind CSS**: Utility-first CSS framework
+- **React Query**: Data fetching and state management
+
+**Shared:**
+- **pnpm Workspaces**: Monorepo package management
+- **TypeScript Project References**: Fast incremental builds
+- **ESLint + Prettier**: Code quality and formatting
+- **Husky**: Git hooks for pre-commit checks
+
 ## Quick Start
 
-### Option 1: Try the Deployed App (Coming Soon)
+Choose your preferred stack:
 
-Once deployed, you can access:
-- **Web Interface**: Visit the Streamlit app URL
-- **API Endpoints**: Access the FastAPI backend directly
+### Python/FastAPI Stack (Production Ready)
 
-### Option 2: Run Locally
+**Option 1: Run Locally**
 
 **Prerequisites:**
 - Python 3.9 or higher
@@ -110,7 +235,7 @@ Once deployed, you can access:
 
 See [Installation](#installation) below for detailed setup instructions.
 
-### Option 3: Deploy Your Own
+**Option 2: Deploy Your Own**
 
 See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for step-by-step guides to deploy on:
 - **Render** (recommended, free tier)
@@ -118,15 +243,40 @@ See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for step-by-step guides to deploy on:
 - **Fly.io** (global edge deployment)
 - **Streamlit Cloud** (frontend hosting, free)
 
-## Prerequisites
+### TypeScript/NestJS Stack (In Development)
+
+**Prerequisites:**
+- Node.js >= 18.0.0
+- pnpm >= 8.0.0
+
+**Setup:**
+```bash
+# Install pnpm
+npm install -g pnpm
+
+# Install dependencies
+pnpm install
+
+# Build all packages
+pnpm build
+
+# Run in development mode
+pnpm dev
+```
+
+See [MONOREPO.md](MONOREPO.md) for detailed TypeScript development guide.
+
+## Installation
+
+### Python/FastAPI Installation
+
+#### Prerequisites
 
 - Python 3.9 or higher
 - OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 - Docker and Docker Compose (optional, for containerized deployment)
 
-## Installation
-
-### Local Development
+#### Local Development
 
 1. Clone the repository:
 ```bash
@@ -169,9 +319,50 @@ streamlit run streamlit_app.py
    - **API Docs**: http://localhost:8000/docs
    - **Streamlit UI**: http://localhost:8501 (if running)
 
-### Docker Deployment
+### TypeScript/NestJS Installation
 
-Docker provides a consistent, isolated environment for running the application. The setup includes automatic database persistence, health checks, and easy configuration.
+#### Prerequisites
+
+- Node.js >= 18.0.0
+- pnpm >= 8.0.0
+
+#### Setup
+
+1. Install pnpm (if not already installed):
+```bash
+npm install -g pnpm
+```
+
+2. Install all workspace dependencies:
+```bash
+pnpm install
+```
+
+3. Build all packages:
+```bash
+pnpm build
+```
+
+4. Run in development mode:
+```bash
+# Run all packages
+pnpm dev
+
+# Or run specific package
+cd packages/backend
+pnpm dev
+```
+
+5. Access the NestJS application:
+   - API: http://localhost:3000
+   - Swagger Docs: http://localhost:3000/docs
+   - Health Check: http://localhost:3000/health
+
+See [MONOREPO.md](MONOREPO.md) for more details on the TypeScript stack.
+
+### Docker Deployment (Python Stack)
+
+Docker provides a consistent, isolated environment for running the Python application. The setup includes automatic database persistence, health checks, and easy configuration.
 
 #### Prerequisites
 
@@ -604,37 +795,119 @@ Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Development Roadmap
 
-### Python/FastAPI (Current - Production Ready)
+### Python/FastAPI Stack ✅ (Production Ready)
 
 - [x] Phase 1: Project Setup & Configuration
-- [x] Phase 2: Database Layer Implementation
-- [x] Phase 3: OpenAI Integration
-- [x] Phase 4: FastAPI Application
-- [x] Phase 5: Containerization
-- [x] Phase 6: Testing & Documentation
-- [x] Phase 7: Streamlit Frontend
-- [x] Phase 8: Cloud Deployment Configurations
+- [x] Phase 2: Database Layer Implementation (99% test coverage)
+- [x] Phase 3: OpenAI Integration (Responses API)
+- [x] Phase 4: FastAPI Application (CORS, validation, error handling)
+- [x] Phase 5: Containerization (Docker + Docker Compose)
+- [x] Phase 6: Testing & Documentation (85%+ coverage, comprehensive docs)
+- [x] Phase 7: Streamlit Frontend (interactive UI with CSV export)
+- [x] Phase 8: Cloud Deployment Configurations (Render, Railway, Fly.io)
+- [x] Phase 9: CI/CD Pipeline (GitHub Actions with 7 parallel jobs)
 
-### TypeScript/Node.js Migration (In Progress)
+**Status**: Fully functional and deployed. Ready for production use.
 
-- [x] Phase 1.1: Initialize TypeScript Monorepo (Issue #15)
-- [ ] Phase 2: AI Provider Abstraction Layer
-- [ ] Phase 3: NestJS Backend Implementation
-- [ ] Phase 4: Next.js Frontend Implementation
-- [ ] Phase 5: Testing & CI/CD
-- [ ] Phase 6: Documentation & Deployment
+### TypeScript/NestJS Stack 🚧 (In Progress)
 
-See [MONOREPO.md](MONOREPO.md) for details on the TypeScript migration.
+#### Completed
+- [x] **Phase 1.1**: Initialize TypeScript Monorepo
+  - [x] pnpm workspace configuration
+  - [x] TypeScript project references
+  - [x] ESLint + Prettier setup
+  - [x] Husky pre-commit hooks
+  - [x] Shared types package (`@text2sql/shared`)
+  - [x] Basic NestJS structure with modules
+  - [x] Health endpoint implementation
+  - [x] Swagger/OpenAPI documentation setup
+  - [x] Global exception filters and validation
+
+#### In Progress
+- [ ] **Phase 2**: AI Provider Abstraction Layer
+  - [ ] Design provider interface
+  - [ ] Implement OpenAI provider
+  - [ ] Implement Anthropic provider
+  - [ ] Add custom provider support
+  - [ ] Provider configuration and switching
+
+#### Planned
+- [ ] **Phase 3**: NestJS Backend Implementation
+  - [ ] Port database models to TypeORM
+  - [ ] Implement SQL validation and security
+  - [ ] Create query endpoints
+  - [ ] Add comprehensive error handling
+  - [ ] Database schema inspection
+
+- [ ] **Phase 4**: Next.js Frontend Implementation
+  - [ ] Setup Next.js 14 with App Router
+  - [ ] Build query interface with Tailwind CSS
+  - [ ] Implement AI provider selector
+  - [ ] Add results visualization
+  - [ ] CSV export functionality
+
+- [ ] **Phase 5**: Testing & CI/CD
+  - [ ] Port unit tests to Jest
+  - [ ] Port integration tests
+  - [ ] Add frontend tests (Vitest + Playwright)
+  - [ ] Setup TypeScript CI/CD pipeline
+  - [ ] E2E testing across stacks
+
+- [ ] **Phase 6**: Documentation & Deployment
+  - [ ] Update documentation for TypeScript stack
+  - [ ] Configure cloud deployment for NestJS
+  - [ ] Create migration guide from Python to TypeScript
+  - [ ] Performance comparison benchmarks
+
+**Current Focus**: Phase 2 - AI Provider Abstraction Layer
+
+See [MONOREPO.md](MONOREPO.md) for detailed TypeScript migration documentation.
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome! This project has two active development tracks:
+
+### Contributing to Python/FastAPI Stack
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Make your changes in `app/`, `tests/`, or `streamlit_app/`
+4. Run tests and linting:
+   ```bash
+   pytest --cov=app --cov-fail-under=85
+   black app/ tests/
+   ruff check app/ tests/
+   ```
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+**Guidelines:**
+- Maintain 85%+ test coverage
+- Follow Black formatting (120 char line length)
+- Pass all CI checks (see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md))
+
+### Contributing to TypeScript/NestJS Stack
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/typescript-feature`)
+3. Make your changes in `packages/`
+4. Run quality checks:
+   ```bash
+   pnpm type-check
+   pnpm lint
+   pnpm format
+   pnpm build
+   ```
+5. Commit your changes (pre-commit hooks will run automatically)
+6. Push to the branch (`git push origin feature/typescript-feature`)
+7. Open a Pull Request
+
+**Guidelines:**
+- Follow TypeScript strict mode
+- Add JSDoc comments to all public APIs
+- Use ESLint and Prettier configurations
+- Update relevant documentation in [MONOREPO.md](MONOREPO.md)
 
 ## License
 
@@ -659,13 +932,22 @@ Access interactive API docs at `/docs`:
 
 ## Project Documentation
 
+### Python/FastAPI Documentation
 - **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Complete deployment guide for all platforms
-- **[docs/CLAUDE.md](docs/CLAUDE.md)** - Developer guide for Claude Code
-- **[docs/database.md](docs/database.md)** - Database layer documentation
+- **[docs/CLAUDE.md](docs/CLAUDE.md)** - Developer guide for AI assistants
+- **[docs/database.md](docs/database.md)** - Database layer documentation (99% coverage)
 - **[docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md)** - CI/CD setup and workflows
 - **[streamlit_app/README.md](streamlit_app/README.md)** - Frontend-specific documentation
 
+### TypeScript/NestJS Documentation
+- **[MONOREPO.md](MONOREPO.md)** - TypeScript monorepo architecture and migration guide
+- **[packages/backend/README.md](packages/backend/README.md)** - NestJS backend documentation
+- **[packages/shared/README.md](packages/shared/README.md)** - Shared types package documentation
+- **[packages/frontend/README.md](packages/frontend/README.md)** - Next.js frontend documentation (planned)
+
 ## Quick Start Scripts
+
+### Python Stack Scripts
 
 Use the helper scripts in `scripts/` for common tasks:
 
@@ -684,6 +966,27 @@ Use the helper scripts in `scripts/` for common tasks:
 ./scripts/deploy.sh railway    # Deploy to Railway
 ./scripts/deploy.sh streamlit  # Deploy frontend
 ./scripts/deploy.sh docker     # Run with Docker
+```
+
+### TypeScript Stack Scripts
+
+Use pnpm workspace scripts for TypeScript development:
+
+```bash
+# Development
+pnpm dev              # Run all packages in dev mode
+pnpm build            # Build all packages
+
+# Code Quality
+pnpm lint             # Lint all packages
+pnpm format           # Format all files
+pnpm type-check       # Type check all packages
+
+# Testing (when implemented)
+pnpm test             # Run all tests
+
+# Cleanup
+pnpm clean            # Remove all build artifacts
 ```
 
 ## Support
