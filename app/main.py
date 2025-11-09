@@ -1,4 +1,12 @@
-"""FastAPI application entrypoint."""
+"""FastAPI application entrypoint.
+
+This module wires together the API surface area, including:
+- CORS configuration (configurable via CORS_ALLOW_ORIGINS)
+- Health checks for operational monitoring
+- Root metadata endpoint for simple discovery
+- Query endpoint that converts natural language into read-only SQL
+- Schema endpoint to expose the current database structure
+"""
 
 from __future__ import annotations
 
@@ -39,12 +47,12 @@ def startup_event() -> None:
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
-    """Simple health check endpoint for bootstrap phase."""
+    """Return a minimal payload indicating the API is responsive."""
     return HealthResponse(status="ok", timestamp=datetime.now(timezone.utc).isoformat())
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root() -> dict[str, str]:
-    """Root endpoint providing basic API metadata."""
+    """Return basic API metadata for quick inspection without opening docs."""
     return {
         "name": app.title,
         "description": app.description or "",
