@@ -69,3 +69,18 @@ def test_schema_endpoint(client) -> None:
     payload = response.json()
     assert "schema" in payload
     assert "Table: customers" in payload["schema"]
+
+
+def test_tables_endpoint(client) -> None:
+    """Tables endpoint should list tables with row counts."""
+    response = client.get("/tables")
+    assert response.status_code == 200
+    payload = response.json()
+    assert "tables" in payload
+    assert isinstance(payload["tables"], list)
+    names = {row["name"] for row in payload["tables"]}
+    assert "customers" in names
+    assert "orders" in names
+    for row in payload["tables"]:
+        assert isinstance(row["row_count"], int)
+        assert row["row_count"] >= 0
