@@ -51,6 +51,15 @@ def test_run_query_error(monkeypatch, client) -> None:
     assert payload["sql_query"] == ""
     assert payload["error"] == "Generation failed"
 
+def test_root_metadata_endpoint(client) -> None:
+    """Root endpoint should return API metadata."""
+    response = client.get("/")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["name"] == "Text-to-SQL API"
+    assert "version" in payload
+    assert "timestamp" in payload
+
 
 def test_schema_endpoint(client) -> None:
     """Schema endpoint should expose the current database schema."""
