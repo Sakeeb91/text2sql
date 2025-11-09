@@ -1,4 +1,11 @@
-"""Database layer utilities with deterministic sample data."""
+"""Database layer utilities with deterministic sample data.
+
+This module provides:
+- SQLAlchemy engine and session factory configured from DATABASE_URL
+- Lightweight table metadata for a sample customers/orders schema
+- Helpers for schema initialisation, seeding, and inspection
+- A safe `execute_query` utility that returns rows as dictionaries
+"""
 
 from __future__ import annotations
 
@@ -84,7 +91,11 @@ class DatabaseExecutionError(RuntimeError):
 
 
 def get_db() -> Generator[Session, None, None]:
-    """Provide a scoped database session generator."""
+    """Provide a context-managed SQLAlchemy session generator.
+
+    The yielded session is guaranteed to be closed when the generator
+    is exhausted or garbage-collected.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -100,7 +111,13 @@ def init_db() -> None:
 
 
 def execute_query(sql: str) -> list[dict[str, Any]]:
-    """Execute a SQL statement and return any rows as dictionaries."""
+    """Execute a SQL statement and return any rows as dictionaries.
+
+    Returns an empty list for statements that do not yield rows.
+    Raises:
+        ValueError: when the input SQL string is empty or whitespace.
+        DatabaseExecutionError: when SQL execution fails.
+    """
     statement = sql.strip()
     if not statement:
         raise ValueError("SQL query must not be empty.")
