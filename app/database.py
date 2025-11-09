@@ -150,6 +150,24 @@ def get_database_schema() -> str:
     return "\n".join(lines).strip()
 
 
+def get_table_row_counts() -> list[dict[str, int | str]]:
+    """Return a list of tables with their approximate row counts.
+
+    This helper performs a COUNT(*) per table. For the small, seeded SQLite dataset
+    this is inexpensive and provides a helpful diagnostic for API consumers.
+    """
+    inspector = inspect(engine)
+    table_names = sorted(inspector.get_table_names())
+    if not table_names:
+        return []
+
+    rows: list[dict[str, int | str]] = []
+    with engine.connect() as connection:
+        for table_name in table_names:
+            count_value = connection.execute(select(func.count()).select_from(text(table_name))).scalar_one()
+            rows.append({"name": table_name, "row_count": int(count_value)})
+    return rows
+
 def _ensure_data_directory(path: Path) -> None:
     """Make sure the database directory exists before any file operations."""
     path.mkdir(parents=True, exist_ok=True)
