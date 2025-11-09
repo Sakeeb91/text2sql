@@ -50,6 +50,7 @@ async def health_check() -> HealthResponse:
     """Return a minimal payload indicating the API is responsive."""
     return HealthResponse(status="ok", timestamp=datetime.now(timezone.utc).isoformat())
 
+
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root() -> dict[str, str]:
     """Return basic API metadata for quick inspection without opening docs."""
