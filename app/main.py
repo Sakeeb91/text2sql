@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import os
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,8 +21,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8501",  # Local Streamlit development
-        "https://*.streamlit.app",  # Streamlit Cloud apps
+        origin.strip()
+        for origin in os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:8501,https://*.streamlit.app").split(",")
+        if origin.strip()
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -39,6 +41,16 @@ def startup_event() -> None:
 async def health_check() -> HealthResponse:
     """Simple health check endpoint for bootstrap phase."""
     return HealthResponse(status="ok", timestamp=datetime.now(timezone.utc).isoformat())
+
+@app.get("/", status_code=status.HTTP_200_OK)
+async def root() -> dict[str, str]:
+    """Root endpoint providing basic API metadata."""
+    return {
+        "name": app.title,
+        "description": app.description or "",
+        "version": app.version or "",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @app.post("/query", response_model=QueryResponse, status_code=status.HTTP_200_OK)
