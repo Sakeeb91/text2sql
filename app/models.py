@@ -52,3 +52,34 @@ class SchemaResponse(BaseModel):
     """Database schema response payload."""
 
     schema: str
+
+
+class TableInfo(BaseModel):
+    """Metadata about a single database table."""
+
+    name: str
+    row_count: int
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "customers",
+                "row_count": 14,
+            }
+        }
+
+
+class TablesResponse(BaseModel):
+    """Response payload for the list of tables and their row counts."""
+
+    tables: list[TableInfo] = Field(default_factory=list)
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "tables": [
+                    {"name": "customers", "row_count": 14},
+                    {"name": "orders", "row_count": 24},
+                ]
+            }
+        }

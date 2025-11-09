@@ -649,6 +649,20 @@ Return a human-readable summary of the current database schema. Useful for debug
 }
 ```
 
+#### GET /tables
+
+Return the list of tables with their row counts. Useful for diagnostics and quick sanity checks.
+
+**Response:**
+```json
+{
+  "tables": [
+    {"name": "customers", "row_count": 14},
+    {"name": "orders", "row_count": 24}
+  ]
+}
+```
+
 ## Query Playbook
 
 The following prompts highlight common analysis tasks supported by the seeded dataset:

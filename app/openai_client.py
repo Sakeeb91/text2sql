@@ -2,7 +2,7 @@
 
 Responsibilities:
 - Format system prompts with database schema context
--,Safely call the OpenAI Responses API with explicit response_format
+- Safely call the OpenAI Responses API with explicit response_format
 - Extract text from multiple possible SDK response shapes
 - Validate that generated SQL is strictly read-only and a single statement
 """
@@ -40,7 +40,10 @@ Database Schema:
 
 Generate accurate, efficient SQL queries based on the user's question."""
 
-DISALLOWED_KEYWORDS = re.compile(r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|REPLACE|TRUNCATE)\b", re.IGNORECASE)
+DISALLOWED_KEYWORDS = re.compile(
+    r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|REPLACE|TRUNCATE|PRAGMA|ATTACH|VACUUM)\b",
+    re.IGNORECASE,
+)
 
 
 def _strip_sql_comments(sql: str) -> str:

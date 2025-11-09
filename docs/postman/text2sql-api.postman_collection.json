@@ -54,6 +54,22 @@
       }
     },
     {
+      "name": "Tables and Row Counts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tables",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tables"
+          ]
+        }
+      }
+    },
+    {
       "name": "Query - Total Customers",
       "request": {
         "method": "POST",

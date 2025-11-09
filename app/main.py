@@ -6,6 +6,7 @@ This module wires together the API surface area, including:
 - Root metadata endpoint for simple discovery
 - Query endpoint that converts natural language into read-only SQL
 - Schema endpoint to expose the current database structure
+- Tables endpoint to list tables with row counts
 """
 
 from __future__ import annotations
@@ -17,7 +18,7 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import database, openai_client
-from app.models import HealthResponse, QueryRequest, QueryResponse, SchemaResponse
+from app.models import HealthResponse, QueryRequest, QueryResponse, SchemaResponse, TablesResponse
 
 app = FastAPI(
     title="Text-to-SQL API",
@@ -92,3 +93,10 @@ def run_query(payload: QueryRequest) -> QueryResponse:
 async def get_schema() -> SchemaResponse:
     """Expose the current database schema as a diagnostic and developer aid."""
     return SchemaResponse(schema=database.get_database_schema())
+
+
+@app.get("/tables", response_model=TablesResponse, status_code=status.HTTP_200_OK)
+async def list_tables() -> TablesResponse:
+    """List all database tables with their row counts."""
+    table_rows = database.get_table_row_counts()
+    return TablesResponse(tables=table_rows)
