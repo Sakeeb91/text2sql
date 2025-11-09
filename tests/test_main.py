@@ -50,3 +50,12 @@ def test_run_query_error(monkeypatch, client) -> None:
     assert payload["success"] is False
     assert payload["sql_query"] == ""
     assert payload["error"] == "Generation failed"
+
+
+def test_schema_endpoint(client) -> None:
+    """Schema endpoint should expose the current database schema."""
+    response = client.get("/schema")
+    assert response.status_code == 200
+    payload = response.json()
+    assert "schema" in payload
+    assert "Table: customers" in payload["schema"]
