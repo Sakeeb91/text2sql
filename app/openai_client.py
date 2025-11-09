@@ -40,7 +40,10 @@ Database Schema:
 
 Generate accurate, efficient SQL queries based on the user's question."""
 
-DISALLOWED_KEYWORDS = re.compile(r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|REPLACE|TRUNCATE)\b", re.IGNORECASE)
+DISALLOWED_KEYWORDS = re.compile(
+    r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|REPLACE|TRUNCATE|PRAGMA|ATTACH|VACUUM)\b",
+    re.IGNORECASE,
+)
 
 
 def _strip_sql_comments(sql: str) -> str:
