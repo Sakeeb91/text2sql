@@ -17,5 +17,3 @@ def test_get_table_row_counts_returns_expected_shape() -> None:
         assert "name" in row and "row_count" in row
         assert isinstance(row["row_count"], int)
         assert row["row_count"] >= 0
-
-

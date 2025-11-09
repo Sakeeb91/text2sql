@@ -168,6 +168,7 @@ def get_table_row_counts() -> list[dict[str, int | str]]:
             rows.append({"name": table_name, "row_count": int(count_value)})
     return rows
 
+
 def _ensure_data_directory(path: Path) -> None:
     """Make sure the database directory exists before any file operations."""
     path.mkdir(parents=True, exist_ok=True)
