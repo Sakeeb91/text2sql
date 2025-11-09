@@ -6,6 +6,7 @@ This module wires together the API surface area, including:
 - Root metadata endpoint for simple discovery
 - Query endpoint that converts natural language into read-only SQL
 - Schema endpoint to expose the current database structure
+- Tables endpoint to list tables with row counts
 """
 
 from __future__ import annotations
