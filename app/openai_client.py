@@ -1,4 +1,11 @@
-"""OpenAI client utilities for generating read-only SQL queries."""
+"""OpenAI client utilities for generating read-only SQL queries.
+
+Responsibilities:
+- Format system prompts with database schema context
+-,Safely call the OpenAI Responses API with explicit response_format
+- Extract text from multiple possible SDK response shapes
+- Validate that generated SQL is strictly read-only and a single statement
+"""
 
 from __future__ import annotations
 
@@ -42,7 +49,14 @@ def _strip_sql_comments(sql: str) -> str:
 
 
 def _extract_text_from_response(response: Any) -> str:
-    """Extract response text from the OpenAI Responses API payload."""
+    """Extract response text from the OpenAI Responses API payload.
+
+    Supports multiple SDK variants by checking several attributes in order:
+    - output_text
+    - output[].content[].text
+    - choices[].message.content
+    - choices[].text
+    """
     text = getattr(response, "output_text", None)
     if isinstance(text, str) and text.strip():
         return text.strip()
@@ -100,7 +114,13 @@ def validate_query_is_read_only(sql: str) -> bool:
 
 
 def generate_sql_query(question: str, schema: str) -> str:
-    """Generate a validated, read-only SQL query from a natural language question."""
+    """Generate a validated, read-only SQL query from a natural language question.
+
+    Ensures:
+    - Non-empty question input
+    - JSON response structure containing the `sql` field
+    - SQL passes read-only validation guard
+    """
     if not question or not question.strip():
         raise ValueError("Question must be a non-empty string.")
 
