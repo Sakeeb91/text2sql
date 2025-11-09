@@ -23,6 +23,12 @@ Tip: When the API is running you can retrieve a human-readable schema summary vi
 curl http://localhost:8000/schema
 ```
 
+For a quick diagnostic of data volume per table, you can also retrieve row counts:
+
+```bash
+curl http://localhost:8000/tables
+```
+
 ### Customers Table
 
 ```sql
