@@ -2,7 +2,7 @@
 
 Responsibilities:
 - Format system prompts with database schema context
--,Safely call the OpenAI Responses API with explicit response_format
+- Safely call the OpenAI Responses API with explicit response_format
 - Extract text from multiple possible SDK response shapes
 - Validate that generated SQL is strictly read-only and a single statement
 """
