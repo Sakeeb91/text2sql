@@ -46,3 +46,9 @@ class HealthResponse(BaseModel):
 
     status: str
     timestamp: str
+
+
+class SchemaResponse(BaseModel):
+    """Database schema response payload."""
+
+    schema: str
