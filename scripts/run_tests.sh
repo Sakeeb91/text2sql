@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run tests with various options
 
-set -e
+set -Eeuo pipefail
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -56,14 +56,8 @@ fi
 # Run tests
 echo "Running: $CMD"
 echo ""
-eval $CMD
+eval "$CMD"
 
 # Show summary
-if [ $? -eq 0 ]; then
-    echo ""
-    echo -e "${GREEN}✅ All tests passed!${NC}"
-else
-    echo ""
-    echo "❌ Some tests failed"
-    exit 1
-fi
+echo ""
+echo -e "${GREEN}✅ Test run completed${NC}"
