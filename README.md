@@ -619,7 +619,33 @@ Health check endpoint to verify the API is running.
 **Response:**
 ```json
 {
-  "status": "healthy"
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+#### GET /
+
+Root endpoint returning basic API metadata.
+
+**Response:**
+```json
+{
+  "name": "Text-to-SQL API",
+  "description": "Convert natural language questions into SQL queries.",
+  "version": "0.1.0",
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+#### GET /schema
+
+Return a human-readable summary of the current database schema. Useful for debugging and development.
+
+**Response:**
+```json
+{
+  "schema": "Table: customers\nColumns: id (INTEGER), name (TEXT), email (TEXT), city (TEXT), created_at (TIMESTAMP)\n\nTable: orders\nColumns: id (INTEGER), customer_id (INTEGER), product_name (TEXT), quantity (INTEGER), total_amount (DECIMAL), order_date (TIMESTAMP)"
 }
 ```
 
@@ -747,6 +773,8 @@ OPENAI_API_KEY=your_openai_api_key_here
 DATABASE_URL=sqlite:///./data/database.db
 OPENAI_MODEL=gpt-4o-mini
 OPENAI_TEMPERATURE=0.1
+# Comma-separated origins for CORS (defaults shown)
+CORS_ALLOW_ORIGINS=http://localhost:8501,https://*.streamlit.app
 ```
 
 ### Frontend Environment Variables
