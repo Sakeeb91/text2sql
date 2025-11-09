@@ -52,3 +52,16 @@ class SchemaResponse(BaseModel):
     """Database schema response payload."""
 
     schema: str
+
+
+class TableInfo(BaseModel):
+    """Metadata about a single database table."""
+
+    name: str
+    row_count: int
+
+
+class TablesResponse(BaseModel):
+    """Response payload for the list of tables and their row counts."""
+
+    tables: list[TableInfo] = Field(default_factory=list)
