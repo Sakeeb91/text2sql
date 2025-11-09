@@ -17,6 +17,12 @@ The database layer provides SQLAlchemy-based database operations for the Text-to
 
 ## Database Schema
 
+Tip: When the API is running you can retrieve a human-readable schema summary via:
+
+```bash
+curl http://localhost:8000/schema
+```
+
 ### Customers Table
 
 ```sql

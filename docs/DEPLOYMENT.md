@@ -145,6 +145,7 @@ Before deploying the Streamlit frontend, you need to enable CORS on your FastAPI
 ```python
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware  # Add this import
+import os
 
 app = FastAPI(
     title="Text-to-SQL API",
@@ -152,13 +153,13 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Add CORS middleware
+# Add CORS middleware (configure via environment variable)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8501",  # Local Streamlit development
-        "https://*.streamlit.app",  # Streamlit Cloud (wildcard)
-        # Add your specific Streamlit app URL here after deployment
+        origin.strip()
+        for origin in os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:8501,https://*.streamlit.app").split(",")
+        if origin.strip()
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -166,6 +167,16 @@ app.add_middleware(
 )
 
 # Rest of your code...
+```
+
+You can set allowed origins by exporting `CORS_ALLOW_ORIGINS` as a comma‑separated list:
+
+```bash
+# Local development defaults (already applied when unset)
+export CORS_ALLOW_ORIGINS="http://localhost:8501,https://*.streamlit.app"
+
+# Example: restrict to your deployed Streamlit app
+export CORS_ALLOW_ORIGINS="https://your-app-name.streamlit.app"
 ```
 
 **Commit and push this change** before deploying Streamlit.
