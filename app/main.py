@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import database, openai_client
-from app.models import HealthResponse, QueryRequest, QueryResponse
+from app.models import HealthResponse, QueryRequest, QueryResponse, SchemaResponse
 
 app = FastAPI(
     title="Text-to-SQL API",
@@ -65,3 +65,9 @@ def run_query(payload: QueryRequest) -> QueryResponse:
         )
     except Exception as exc:  # pragma: no cover - defensive guard
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+
+
+@app.get("/schema", response_model=SchemaResponse, status_code=status.HTTP_200_OK)
+async def get_schema() -> SchemaResponse:
+    """Expose the current database schema as a diagnostic and developer aid."""
+    return SchemaResponse(schema=database.get_database_schema())
