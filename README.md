@@ -796,6 +796,9 @@ The repository ships with unit, integration, and end-to-end test suites. Pytest 
 ```bash
 # Run the full test matrix with coverage enforcement (>=85%)
 pytest
+
+# Helper script (Python + optional NestJS tests)
+scripts/run_tests.sh --ts
 ```
 
 ### Focused Suites
