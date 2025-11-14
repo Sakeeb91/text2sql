@@ -10,5 +10,6 @@ describe('HealthController', () => {
 
     expect(response.status).toBe('ok');
     expect(new Date(response.timestamp).toString()).not.toBe('Invalid Date');
+    expect(response.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   });
 });
