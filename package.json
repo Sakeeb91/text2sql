@@ -27,7 +27,8 @@
     "ts:lint": "pnpm --filter @text2sql/backend lint",
     "ts:type-check": "pnpm --filter @text2sql/backend type-check",
     "ts:test": "pnpm --filter @text2sql/backend test",
-    "ts:test:coverage": "pnpm --filter @text2sql/backend test:coverage"
+    "ts:test:coverage": "pnpm --filter @text2sql/backend test:coverage",
+    "ts:compose": "docker compose --profile typescript up ts-postgres ts-backend"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",
