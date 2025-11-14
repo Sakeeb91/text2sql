@@ -28,7 +28,8 @@
     "ts:type-check": "pnpm --filter @text2sql/backend type-check",
     "ts:test": "pnpm --filter @text2sql/backend test",
     "ts:test:coverage": "pnpm --filter @text2sql/backend test:coverage",
-    "ts:compose": "docker compose --profile typescript up ts-postgres ts-backend"
+    "ts:compose": "docker compose --profile typescript up ts-postgres ts-backend",
+    "ts:env:validate": "tsx packages/backend/scripts/validate-database-config.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -41,6 +42,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "prettier": "^3.2.4",
+    "tsx": "^4.16.2",
     "typescript": "^5.3.3"
   },
   "engines": {
