@@ -32,12 +32,14 @@ text2sql/
 Shared TypeScript types and utilities used across backend and frontend.
 
 **Key Features**:
+
 - API request/response types (QueryRequest, QueryResponse, HealthResponse)
 - Database entity types (Customer, Order)
 - Schema metadata types (TableSchema, ColumnDefinition)
 - Comprehensive JSDoc documentation
 
 **Usage**:
+
 ```typescript
 import { QueryRequest, QueryResponse } from '@text2sql/shared';
 ```
@@ -49,6 +51,7 @@ import { QueryRequest, QueryResponse } from '@text2sql/shared';
 NestJS backend API with TypeORM and AI provider abstraction.
 
 **Planned Features**:
+
 - RESTful API endpoints
 - Multiple AI provider support (OpenAI, Anthropic, custom)
 - SQL validation and security
@@ -62,6 +65,7 @@ NestJS backend API with TypeORM and AI provider abstraction.
 Next.js 14 frontend with App Router and Server Components.
 
 **Planned Features**:
+
 - Interactive query interface
 - Real-time results display
 - AI provider selector
@@ -76,6 +80,7 @@ Next.js 14 frontend with App Router and Server Components.
 - pnpm >= 8.0.0
 
 Install pnpm if you haven't already:
+
 ```bash
 npm install -g pnpm
 ```
@@ -83,23 +88,35 @@ npm install -g pnpm
 ### Installation
 
 1. Install all dependencies:
+
 ```bash
 pnpm install
 ```
 
 2. Build all packages:
+
 ```bash
 pnpm build
 ```
 
+### Environment Management
+
+- Copy `.env.example` at the repo root to `.env` for shared variables (OpenAI, database URL, etc.)
+- Package-specific templates live in `packages/backend/env-templates/` for development, test, and production
+- The NestJS backend reads `.env.local` and `.env` automatically through `@nestjs/config`
+- Use PostgreSQL connection strings (`postgresql://postgres:postgres@localhost:5432/text2sql`) when exercising the TS stack
+- Keep secrets (real `.env` files) out of version control; only the `*.example` templates are committed
+
 ### Development
 
 Run all packages in development mode:
+
 ```bash
 pnpm dev
 ```
 
 Run specific package:
+
 ```bash
 cd packages/shared
 pnpm dev
@@ -121,6 +138,7 @@ pnpm dev
 ### Package Level
 
 Each package has its own scripts:
+
 - `pnpm build` - Build the package
 - `pnpm dev` - Run in development/watch mode
 - `pnpm type-check` - Type check the package
@@ -132,6 +150,7 @@ Each package has its own scripts:
 ### TypeScript
 
 All packages use strict TypeScript configuration:
+
 - Strict mode enabled
 - No implicit any
 - Unused variables/parameters detection
@@ -141,6 +160,7 @@ All packages use strict TypeScript configuration:
 ### ESLint
 
 Comprehensive ESLint rules enforcing:
+
 - TypeScript best practices
 - Import ordering and organization
 - Async/await patterns
@@ -150,6 +170,7 @@ Comprehensive ESLint rules enforcing:
 ### Prettier
 
 Consistent code formatting:
+
 - Single quotes
 - 2 space indentation
 - 100 character line length
@@ -159,6 +180,7 @@ Consistent code formatting:
 ### Pre-commit Hooks
 
 Husky and lint-staged automatically run on commit:
+
 - ESLint with auto-fix
 - Prettier formatting
 - Type checking
@@ -176,6 +198,7 @@ The `@text2sql/shared` package ensures type consistency across the stack:
 ### Workspace Dependencies
 
 Packages reference each other using workspace protocol:
+
 ```json
 {
   "dependencies": {
@@ -185,6 +208,7 @@ Packages reference each other using workspace protocol:
 ```
 
 This ensures:
+
 - Always use the latest local version
 - Type definitions are always in sync
 - No need to publish to npm for development
@@ -192,12 +216,14 @@ This ensures:
 ## Project References
 
 TypeScript project references enable:
+
 - Faster incremental builds
 - Better IDE performance
 - Enforced dependency graph
 - Parallel compilation
 
 The root `tsconfig.json` references all packages:
+
 ```json
 {
   "references": [
@@ -213,36 +239,42 @@ The root `tsconfig.json` references all packages:
 This monorepo is part of a phased migration from Python/FastAPI to TypeScript/NestJS:
 
 ### Phase 1: Project Setup ✅
+
 - [x] Initialize monorepo structure
 - [x] Setup TypeScript configuration
 - [x] Configure code quality tools
 - [x] Create shared types package
 
 ### Phase 2: AI Provider Abstraction 🚧
+
 - [ ] Design provider interface
 - [ ] Implement OpenAI provider
 - [ ] Implement Anthropic provider
 - [ ] Add custom provider support
 
 ### Phase 3: Backend Implementation 🚧
+
 - [ ] Port database models
 - [ ] Implement SQL validation
 - [ ] Create API endpoints
 - [ ] Add middleware and error handling
 
 ### Phase 4: Frontend Implementation 🚧
+
 - [ ] Setup Next.js with App Router
 - [ ] Build query interface
 - [ ] Implement provider selector
 - [ ] Add results visualization
 
 ### Phase 5: Testing 🚧
+
 - [ ] Port unit tests to Jest
 - [ ] Port integration tests
 - [ ] Add frontend tests (Vitest + Playwright)
 - [ ] Setup CI/CD pipeline
 
 ### Phase 6: Documentation & Deployment 🚧
+
 - [ ] Update documentation
 - [ ] Configure cloud deployment
 - [ ] Create migration guide
@@ -272,6 +304,7 @@ When contributing to the TypeScript monorepo:
 ### pnpm install fails
 
 Ensure you have pnpm >= 8.0.0:
+
 ```bash
 pnpm --version
 npm install -g pnpm@latest
@@ -280,22 +313,26 @@ npm install -g pnpm@latest
 ### Type errors in IDE
 
 Rebuild project references:
+
 ```bash
 pnpm clean
 pnpm build
 ```
 
 Restart your TypeScript server in VS Code:
+
 - Cmd+Shift+P → "TypeScript: Restart TS Server"
 
 ### Husky hooks not running
 
 Reinstall husky:
+
 ```bash
 pnpm prepare
 ```
 
 Make sure `.husky/pre-commit` is executable:
+
 ```bash
 chmod +x .husky/pre-commit
 ```
@@ -310,4 +347,3 @@ chmod +x .husky/pre-commit
 ## License
 
 MIT
-
