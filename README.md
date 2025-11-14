@@ -473,6 +473,36 @@ Configure the application using environment variables in `.env`:
 | `OPENAI_MODEL`       | OpenAI model to use        | `gpt-4o-mini`                  | No       |
 | `OPENAI_TEMPERATURE` | Model temperature (0-2)    | `0.1`                          | No       |
 
+### Docker Deployment (TypeScript Stack)
+
+Phase 1.5 introduces an opt-in Compose profile for the NestJS backend. The Python stack remains the default; enable the TypeScript profile when you want to work with the Node stack.
+
+#### Quick Start
+
+```bash
+# Copy the dev template for local usage
+cp packages/backend/env-templates/.env.development.example packages/backend/.env.local
+
+# Start PostgreSQL + NestJS backend
+docker compose --profile typescript up ts-postgres ts-backend
+
+# Optional: include the placeholder frontend wiring
+docker compose --profile typescript up ts-postgres ts-backend ts-frontend
+```
+
+Services in the profile:
+
+| Service       | Purpose                              | Host Port | Notes                                       |
+| ------------- | ------------------------------------ | --------- | ------------------------------------------- |
+| `ts-postgres` | PostgreSQL 15 with persistent volume | `5432`    | Uses volume `ts-postgres-data`              |
+| `ts-backend`  | NestJS API + hot reload              | `3000`    | Mounts src/test directories for live coding |
+| `ts-frontend` | Placeholder Next.js container        | _n/a_     | Keeps env + networking ready for Phase 4    |
+
+- Backend container runs the `development` stage from `packages/backend/Dockerfile` (`pnpm --filter @text2sql/backend dev`).
+- Source directories are bind-mounted; `node_modules` stay inside the container while `ts-pnpm-store` caches pnpm artifacts.
+- `DATABASE_URL` defaults to `postgresql://postgres:postgres@ts-postgres:5432/text2sql` within the Compose network.
+- See [docs/typescript-devops.md](docs/typescript-devops.md) for troubleshooting and advanced scenarios.
+
 #### Health Checks
 
 The container includes automatic health checks that run every 30 seconds:
