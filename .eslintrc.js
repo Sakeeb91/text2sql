@@ -15,7 +15,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2022,
     sourceType: 'module',
-    project: ['./tsconfig.json', './packages/*/tsconfig.json', './packages/*/tsconfig.eslint.json'],
+    project: ['./tsconfig.json', './packages/*/tsconfig.eslint.json'],
   },
   plugins: ['@typescript-eslint', 'import', 'prettier'],
   extends: [
@@ -91,11 +91,7 @@ module.exports = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: [
-          './tsconfig.json',
-          './packages/*/tsconfig.json',
-          './packages/*/tsconfig.eslint.json',
-        ],
+        project: ['./tsconfig.json', './packages/*/tsconfig.eslint.json'],
       },
     },
   },
