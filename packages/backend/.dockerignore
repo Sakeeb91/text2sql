@@ -1,0 +1,17 @@
+node_modules
+.pnpm-store
+.env
+.env.*
+.env.local
+.env.test
+.env.production
+dist
+coverage
+*.log
+.DS_Store
+.idea
+.vscode
+tsconfig.eslint.json
+vitest.config.ts
+**/*.spec.ts
+**/*.test.ts
