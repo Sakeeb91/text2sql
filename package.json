@@ -21,7 +21,13 @@
     "type-check": "pnpm -r type-check",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean && rm -rf node_modules",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "ts:dev": "pnpm --filter @text2sql/backend dev",
+    "ts:build": "pnpm --filter @text2sql/backend build",
+    "ts:lint": "pnpm --filter @text2sql/backend lint",
+    "ts:type-check": "pnpm --filter @text2sql/backend type-check",
+    "ts:test": "pnpm --filter @text2sql/backend test",
+    "ts:test:coverage": "pnpm --filter @text2sql/backend test:coverage"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -41,4 +47,3 @@
   },
   "packageManager": "pnpm@8.15.1"
 }
-
