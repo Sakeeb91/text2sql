@@ -28,6 +28,7 @@ The CI pipeline consists of **7 parallel jobs** organized into required checks a
 **Purpose**: Enforce code standards, security, and type safety
 
 **Steps**:
+
 - **Ruff Linter**: Fast Python linter checking for code style, bugs, and best practices
 - **Black Formatter**: Ensures consistent code formatting (120 char line length)
 - **MyPy Type Checker**: Static type checking (advisory mode)
@@ -43,12 +44,14 @@ The CI pipeline consists of **7 parallel jobs** organized into required checks a
 **Purpose**: Ensure compatibility across Python versions and operating systems
 
 **Matrix**:
+
 ```yaml
 Python Versions: 3.9, 3.10, 3.11, 3.12
 Operating Systems: Ubuntu (all versions), macOS (Python 3.11 only)
 ```
 
 **Steps**:
+
 - Install dependencies
 - Run full test suite with coverage
 - Enforce 85% minimum coverage threshold
@@ -63,6 +66,7 @@ Operating Systems: Ubuntu (all versions), macOS (Python 3.11 only)
 **Purpose**: Ensure API endpoints are working and schema is valid
 
 **Steps**:
+
 - Start FastAPI server
 - Validate OpenAPI schema is accessible
 - Test health endpoint returns success
@@ -78,6 +82,7 @@ Operating Systems: Ubuntu (all versions), macOS (Python 3.11 only)
 **Purpose**: Verify database layer works correctly from scratch
 
 **Steps**:
+
 - Test database initialization
 - Test schema inspection
 - Test query execution
@@ -90,6 +95,7 @@ Operating Systems: Ubuntu (all versions), macOS (Python 3.11 only)
 **Purpose**: Monitor API response time and catch performance regressions
 
 **Steps**:
+
 - Run performance-specific tests
 - Measure query endpoint response time
 - Compare against baseline (< 3 seconds)
@@ -105,6 +111,7 @@ Operating Systems: Ubuntu (all versions), macOS (Python 3.11 only)
 **Triggered**: Only when documentation files change (docs/, README.md)
 
 **Steps**:
+
 - Markdown linting
 - Link validation (all links return 200)
 
@@ -115,15 +122,37 @@ Operating Systems: Ubuntu (all versions), macOS (Python 3.11 only)
 **Purpose**: Provide at-a-glance view of CI results
 
 **Steps**:
+
 - Wait for all required checks
 - Generate summary with pass/fail status
 - Post comment on pull request
 
 **Content**:
+
 - Status of all required checks
 - Links to detailed results
 - Coverage information
 - Links to artifacts
+
+## TypeScript Workflow (Phase 1.5)
+
+A dedicated workflow (`.github/workflows/ts-ci.yml`) keeps the NestJS backend honest while it evolves.
+
+### Job Overview
+
+1. **ts-code-quality** – ESLint, Prettier check, and TypeScript type-checking via `pnpm ts:*` scripts.
+2. **ts-test-matrix** – Vitest test suite on Node 18/20/22.
+3. **ts-coverage** – Generates `coverage/typescript/backend` artifacts and uploads to Codecov.
+4. **ts-build** – Runs `pnpm ts:build` to ensure the NestJS bundle compiles.
+5. **ts-database-integrity** – Executes `pnpm ts:env:validate` to verify the new env templates and PostgreSQL DSNs.
+6. **ts-performance-check** – Builds the backend, launches it on port 4010, and pings `/health` as a smoke/perf check.
+7. **ts-security-scan** – `pnpm audit --prod` (advisory) for dependency vulnerabilities.
+8. **ts-pr-summary** – Comments on PRs with the TypeScript job results.
+9. **ts-required** – Gatekeeper job; fails if code-quality, test matrix, or build jobs fail.
+
+### Triggers
+
+The workflow runs on the same branches/PRs as the Python pipeline (`main`, `develop`, `feat/**`, `issue/**`).
 
 ## Triggering the Pipeline
 
@@ -182,7 +211,11 @@ addopts = ["--cov=app", "--cov-fail-under=85"]
 
 ### .github/workflows/ci.yml
 
-Main CI pipeline definition with all jobs
+Main CI pipeline definition with all Python-focused jobs
+
+### .github/workflows/ts-ci.yml
+
+TypeScript CI workflow with pnpm caching, Vitest coverage, Docker-friendly health checks, and PR summaries.
 
 ### requirements-dev.txt
 
@@ -193,15 +226,14 @@ Development tools and dependencies
 Recommended settings for the `main` branch:
 
 ```yaml
-Required status checks:
-  ✓ Code Quality Checks
+Required status checks: ✓ Code Quality Checks
   ✓ Test Matrix (Python 3.11, ubuntu-latest)
   ✓ API Contract Validation
   ✓ Database Integrity
+  ✓ TypeScript Required Checks
   ✓ All Required Checks Passed
 
-Additional settings:
-  ✓ Require branches to be up to date before merging
+Additional settings: ✓ Require branches to be up to date before merging
   ✓ Require pull request reviews (1 approver)
   ✓ Dismiss stale reviews when new commits are pushed
   ✓ Require review from code owners
@@ -228,6 +260,7 @@ Additional settings:
 **Problem**: Ruff or Black checks fail
 
 **Solution**:
+
 ```bash
 # Auto-fix most issues
 black app/ tests/
@@ -242,11 +275,13 @@ ruff check app/ tests/
 **Problem**: Tests fail in CI but pass locally
 
 **Possible Causes**:
+
 1. Missing environment variable (OPENAI_API_KEY)
 2. Python version differences
 3. Database state issues
 
 **Solution**:
+
 ```bash
 # Test with specific Python version
 python3.11 -m pytest
@@ -261,6 +296,7 @@ pytest
 **Problem**: Coverage below 85% threshold
 
 **Solution**:
+
 ```bash
 # See which lines are missing coverage
 pytest --cov=app --cov-report=term-missing
@@ -274,6 +310,7 @@ pytest --cov=app --cov-report=term-missing
 **Problem**: API endpoints don't match schema
 
 **Solution**:
+
 - Check FastAPI server starts successfully
 - Verify OpenAPI schema at http://localhost:8000/openapi.json
 - Ensure response models match Pydantic definitions
@@ -285,6 +322,7 @@ pytest --cov=app --cov-report=term-missing
 **Note**: Type checking is currently advisory (won't block merge)
 
 **Solution**:
+
 ```bash
 mypy app/ --ignore-missing-imports
 # Fix reported issues for better code quality
@@ -298,6 +336,7 @@ The performance check measures query endpoint response time:
 **Measured**: p95 latency of 5 consecutive queries
 
 **If performance degrades**:
+
 1. Check OpenAI API latency
 2. Profile SQL query execution
 3. Review any new database operations
@@ -310,6 +349,7 @@ Two security tools run in advisory mode:
 ### Bandit
 
 Scans Python code for common security issues:
+
 - SQL injection vulnerabilities
 - Hardcoded passwords
 - Insecure random number generation
@@ -318,6 +358,7 @@ Scans Python code for common security issues:
 ### Safety
 
 Checks dependencies for known CVEs:
+
 - Compares requirements.txt against vulnerability database
 - Reports critical/high severity issues
 
@@ -326,6 +367,7 @@ Checks dependencies for known CVEs:
 ## Codecov Integration
 
 Coverage reports are uploaded to Codecov for:
+
 - Historical coverage tracking
 - PR coverage diffs
 - Coverage visualization
@@ -352,6 +394,7 @@ MIN_COVERAGE:
 ```
 
 **Setting Secrets**:
+
 1. Go to Repository Settings → Secrets and variables → Actions
 2. Click "New repository secret"
 3. Add `OPENAI_API_KEY` with your API key
@@ -362,16 +405,19 @@ MIN_COVERAGE:
 CI jobs generate artifacts for debugging:
 
 ### Security Reports
+
 - Location: `security-reports/bandit-report.json`
 - Retention: 90 days
 - Contains: Detailed security scan results
 
 ### OpenAPI Schema
+
 - Location: `openapi-schema/openapi.json`
 - Retention: 90 days
 - Contains: Current API schema definition
 
 **Downloading Artifacts**:
+
 1. Go to Actions → Select workflow run
 2. Scroll to "Artifacts" section
 3. Click to download
@@ -381,6 +427,7 @@ CI jobs generate artifacts for debugging:
 ### For Developers
 
 1. **Run checks locally first**: Catch issues before pushing
+
    ```bash
    black app/ tests/ && ruff check app/ tests/ && pytest
    ```
@@ -423,12 +470,14 @@ Monitor these metrics over time:
 ## CI Pipeline Evolution
 
 ### Phase 1 (Current)
+
 - ✅ Multi-Python version testing
 - ✅ Code quality enforcement
 - ✅ Security scanning
 - ✅ API contract validation
 
 ### Phase 2 (Planned)
+
 - [ ] Automated dependency updates (Dependabot)
 - [ ] Docker image building and scanning
 - [ ] E2E tests against staging environment
@@ -436,6 +485,7 @@ Monitor these metrics over time:
 - [ ] Automatic changelog generation
 
 ### Phase 3 (Future)
+
 - [ ] Continuous deployment to staging
 - [ ] Blue-green deployments to production
 - [ ] Automated rollback on failure
@@ -445,12 +495,14 @@ Monitor these metrics over time:
 ## Getting Help
 
 **CI Failures**: Check this document first, then:
+
 1. Review job logs in GitHub Actions
 2. Download artifacts for detailed reports
 3. Reproduce locally with same Python version
 4. Ask in team chat with link to failing run
 
 **Configuration Changes**:
+
 - Open an issue before modifying CI pipeline
 - Test changes in feature branch first
 - Document any new requirements
@@ -465,6 +517,7 @@ Monitor these metrics over time:
 ## Changelog
 
 ### 2025-10-30
+
 - Initial CI/CD pipeline implementation
 - Added code quality checks with ruff and black
 - Added test matrix for Python 3.9-3.12
