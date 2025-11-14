@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   text2sql-api:
@@ -26,7 +26,81 @@ services:
       start_period: 40s
     networks:
       - text2sql-network
+  ts-postgres:
+    profiles: ['typescript']
+    image: postgres:15-alpine
+    container_name: text2sql-ts-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=text2sql
+    ports:
+      - "5432:5432"
+    volumes:
+      - ts-postgres-data:/var/lib/postgresql/data
+    networks:
+      - text2sql-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ts-backend:
+    profiles: ['typescript']
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+      target: development
+    container_name: text2sql-ts-backend
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=${PORT:-3000}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:?OPENAI_API_KEY is required for NestJS backend}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - OPENAI_TEMPERATURE=${OPENAI_TEMPERATURE:-0.1}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@ts-postgres:5432/text2sql}
+    volumes:
+      - ./packages/backend/src:/app/packages/backend/src
+      - ./packages/backend/test:/app/packages/backend/test
+      - ./packages/shared/src:/app/packages/shared/src
+      - ts-pnpm-store:/pnpm/store
+    ports:
+      - "3000:3000"
+    depends_on:
+      ts-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - text2sql-network
+
+  ts-frontend:
+    profiles: ['typescript']
+    image: node:20-alpine
+    container_name: text2sql-ts-frontend
+    working_dir: /app
+    command: >
+      sh -c "echo 'Next.js frontend placeholder (Phase 4)' &&
+             while true; do sleep 3600; done"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://ts-backend:3000
+    volumes:
+      - ./packages/frontend:/app
+    depends_on:
+      - ts-backend
+    networks:
+      - text2sql-network
 
 networks:
   text2sql-network:
     driver: bridge
+
+volumes:
+  ts-postgres-data:
+  ts-pnpm-store:
