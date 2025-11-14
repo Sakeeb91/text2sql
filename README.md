@@ -16,6 +16,7 @@ The system is designed with security in mind, generating only read-only SELECT q
 ### TypeScript/NestJS Stack (In Development 🚧)
 
 A modern TypeScript monorepo architecture with:
+
 - **NestJS Backend**: Modular backend with AI provider abstraction layer
 - **Next.js Frontend**: (Planned) Modern React-based UI
 - **Shared Types Package**: Type-safe contracts across the stack
@@ -27,12 +28,14 @@ See [MONOREPO.md](MONOREPO.md) for details on the TypeScript migration.
 The project maintains both Python and TypeScript implementations to serve different needs:
 
 **Python/FastAPI Stack:**
+
 - ✅ Production-ready and fully tested
 - ✅ Quick to deploy and iterate
 - ✅ Excellent for data science and ML workflows
 - ✅ Simpler deployment with fewer dependencies
 
 **TypeScript/NestJS Stack:**
+
 - 🎯 Enterprise-grade scalability and maintainability
 - 🎯 Type safety across the entire stack
 - 🎯 Multi-provider AI support (OpenAI, Anthropic, custom)
@@ -46,12 +49,14 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 ### Core Features (Both Stacks)
 
 **Natural Language to SQL Processing:**
+
 - Convert plain English questions into valid SQL queries using AI
 - Schema-aware query generation with automatic database inspection
 - Security-first design: only SELECT queries allowed
 - Comprehensive error handling and validation
 
 **API Capabilities:**
+
 - RESTful API with clean, well-documented endpoints
 - Auto-generated Swagger/OpenAPI documentation
 - CORS enabled for frontend integration
@@ -60,6 +65,7 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 ### Python/FastAPI Stack Features ✅
 
 **Backend:**
+
 - FastAPI with Uvicorn ASGI server
 - SQLAlchemy ORM with SQLite database
 - OpenAI GPT-4o-mini integration (Responses API)
@@ -68,6 +74,7 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 - GitHub Actions CI/CD with 7 parallel jobs
 
 **Frontend:**
+
 - 🔍 Interactive Streamlit web interface
 - 📊 Live results display in interactive tables
 - 📥 CSV export functionality
@@ -78,6 +85,7 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 ### TypeScript/NestJS Stack Features 🚧
 
 **Backend (In Progress):**
+
 - NestJS modular architecture
 - TypeORM for database operations
 - AI Provider Abstraction Layer (multi-provider support)
@@ -86,6 +94,7 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 - Type-safe API contracts with shared types
 
 **Frontend (Planned):**
+
 - Next.js 14 with App Router
 - Server-side rendering for better performance
 - AI provider selector in UI
@@ -93,6 +102,7 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 - Type-safe API client with React Query
 
 **Shared Package (Completed):**
+
 - Centralized TypeScript type definitions
 - API request/response types
 - Database entity types
@@ -182,6 +192,7 @@ text2sql/
 ### Python Stack (Production)
 
 **Backend:**
+
 - **FastAPI**: Modern, fast web framework for building APIs
 - **Uvicorn**: ASGI server for running FastAPI applications
 - **SQLAlchemy**: SQL toolkit and ORM for database operations
@@ -190,11 +201,13 @@ text2sql/
 - **Pydantic**: Data validation using Python type annotations
 
 **Frontend:**
+
 - **Streamlit**: Interactive web application framework
 - **Pandas**: Data manipulation and CSV export
 - **Requests**: HTTP client for API communication
 
 **DevOps:**
+
 - **Docker**: Containerization and local development
 - **GitHub Actions**: CI/CD pipeline with automated testing
 - **Render/Railway**: Cloud deployment platforms
@@ -202,6 +215,7 @@ text2sql/
 ### TypeScript Stack (In Development)
 
 **Backend (NestJS):**
+
 - **NestJS**: Progressive Node.js framework with TypeScript
 - **TypeORM**: TypeScript-first ORM for database operations
 - **AI Provider Abstraction**: Multi-provider support (OpenAI, Anthropic, custom)
@@ -209,12 +223,14 @@ text2sql/
 - **Class Validator**: Request validation with decorators
 
 **Frontend (Planned):**
+
 - **Next.js 14**: React framework with App Router
 - **TypeScript**: Type-safe frontend development
 - **Tailwind CSS**: Utility-first CSS framework
 - **React Query**: Data fetching and state management
 
 **Shared:**
+
 - **pnpm Workspaces**: Monorepo package management
 - **TypeScript Project References**: Fast incremental builds
 - **ESLint + Prettier**: Code quality and formatting
@@ -229,6 +245,7 @@ Choose your preferred stack:
 **Option 1: Run Locally**
 
 **Prerequisites:**
+
 - Python 3.9 or higher
 - OpenAI API key
 - Docker and Docker Compose (optional, for containerized deployment)
@@ -238,6 +255,7 @@ See [Installation](#installation) below for detailed setup instructions.
 **Option 2: Deploy Your Own**
 
 See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for step-by-step guides to deploy on:
+
 - **Render** (recommended, free tier)
 - **Railway** (fast deployments, free tier)
 - **Fly.io** (global edge deployment)
@@ -246,10 +264,12 @@ See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for step-by-step guides to deploy on:
 ### TypeScript/NestJS Stack (In Development)
 
 **Prerequisites:**
+
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
 
 **Setup:**
+
 ```bash
 # Install pnpm
 npm install -g pnpm
@@ -279,34 +299,40 @@ See [MONOREPO.md](MONOREPO.md) for detailed TypeScript development guide.
 #### Local Development
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Sakeeb91/text2sql.git
 cd text2sql
 ```
 
 2. Create and activate a virtual environment:
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 4. Set up environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env and add your OpenAI API key
 ```
 
 5. Run the backend API:
+
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 6. (Optional) Run the Streamlit frontend:
+
 ```bash
 # In a new terminal
 cd streamlit_app
@@ -329,21 +355,25 @@ streamlit run streamlit_app.py
 #### Setup
 
 1. Install pnpm (if not already installed):
+
 ```bash
 npm install -g pnpm
 ```
 
 2. Install all workspace dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Build all packages:
+
 ```bash
 pnpm build
 ```
 
 4. Run in development mode:
+
 ```bash
 # Run all packages
 pnpm dev
@@ -372,18 +402,21 @@ Docker provides a consistent, isolated environment for running the Python applic
 #### Quick Start
 
 1. Clone the repository and navigate to the project directory:
+
 ```bash
 git clone https://github.com/Sakeeb91/text2sql.git
 cd text2sql
 ```
 
 2. Create `.env` file with your OpenAI API key:
+
 ```bash
 cp .env.example .env
 # Edit .env and add your OpenAI API key
 ```
 
 3. Build and run with Docker Compose:
+
 ```bash
 docker-compose up --build
 ```
@@ -433,12 +466,12 @@ The SQLite database is stored in `./data` and persists across container restarts
 
 Configure the application using environment variables in `.env`:
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `OPENAI_API_KEY` | Your OpenAI API key | - | ✅ Yes |
-| `DATABASE_URL` | Database connection string | `sqlite:///./data/database.db` | No |
-| `OPENAI_MODEL` | OpenAI model to use | `gpt-4o-mini` | No |
-| `OPENAI_TEMPERATURE` | Model temperature (0-2) | `0.1` | No |
+| Variable             | Description                | Default                        | Required |
+| -------------------- | -------------------------- | ------------------------------ | -------- |
+| `OPENAI_API_KEY`     | Your OpenAI API key        | -                              | ✅ Yes   |
+| `DATABASE_URL`       | Database connection string | `sqlite:///./data/database.db` | No       |
+| `OPENAI_MODEL`       | OpenAI model to use        | `gpt-4o-mini`                  | No       |
+| `OPENAI_TEMPERATURE` | Model temperature (0-2)    | `0.1`                          | No       |
 
 #### Health Checks
 
@@ -453,6 +486,7 @@ docker inspect text2sql-api | grep -A 10 Health
 ```
 
 Health check statuses:
+
 - `starting`: Container is starting up (first 40 seconds)
 - `healthy`: Application is responding correctly
 - `unhealthy`: Application failed health check (container will restart)
@@ -460,11 +494,13 @@ Health check statuses:
 #### Resource Requirements
 
 Minimum requirements:
+
 - **CPU**: 1 core
 - **Memory**: 512MB
 - **Disk**: 200MB (plus database size)
 
 Recommended for production:
+
 - **CPU**: 2 cores
 - **Memory**: 1GB
 - **Disk**: 1GB
@@ -474,6 +510,7 @@ Recommended for production:
 For production environments, consider:
 
 1. **Use a production database**: Replace SQLite with PostgreSQL or MySQL
+
    ```yaml
    environment:
      - DATABASE_URL=postgresql://user:pass@host:5432/dbname
@@ -482,18 +519,20 @@ For production environments, consider:
 2. **Add nginx reverse proxy**: For SSL/TLS termination and load balancing
 
 3. **Enable Docker secrets**: For sensitive environment variables
+
    ```yaml
    secrets:
      - openai_api_key
    ```
 
 4. **Implement logging**: Configure log aggregation
+
    ```yaml
    logging:
-     driver: "json-file"
+     driver: 'json-file'
      options:
-       max-size: "10m"
-       max-file: "3"
+       max-size: '10m'
+       max-file: '3'
    ```
 
 5. **Add monitoring**: Use tools like Prometheus, Grafana, or DataDog
@@ -505,19 +544,22 @@ For production environments, consider:
 **Error**: `Bind for 0.0.0.0:8000 failed: port is already allocated`
 
 **Solution**: Change the port mapping in `docker-compose.yml`:
+
 ```yaml
 ports:
-  - "8001:8000"  # Use port 8001 instead
+  - '8001:8000' # Use port 8001 instead
 ```
 
 ##### Container Exits Immediately
 
 **Solution**: Check the logs for errors:
+
 ```bash
 docker-compose logs text2sql-api
 ```
 
 Common causes:
+
 - Missing `OPENAI_API_KEY` in `.env`
 - Syntax error in `.env` file
 - Port conflict
@@ -527,6 +569,7 @@ Common causes:
 **Error**: `PermissionError: [Errno 13] Permission denied: '/app/data/database.db'`
 
 **Solution**: Fix directory permissions:
+
 ```bash
 chmod 777 data/
 docker-compose restart
@@ -535,6 +578,7 @@ docker-compose restart
 ##### Build Failures
 
 **Solution**: Clear Docker cache and rebuild:
+
 ```bash
 docker-compose down
 docker-compose build --no-cache
@@ -546,6 +590,7 @@ docker-compose up
 **Error**: `Invalid API key` or `Rate limit exceeded`
 
 **Solution**:
+
 1. Verify API key in `.env` file
 2. Check API key validity at https://platform.openai.com/api-keys
 3. Ensure you have sufficient API credits
@@ -584,6 +629,7 @@ docker-compose -f docker-compose.test.yml run test pytest --cov=app
 ## API Documentation
 
 Once the application is running, visit:
+
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
@@ -594,6 +640,7 @@ Once the application is running, visit:
 Convert a natural language question to SQL and execute it.
 
 **Request Body:**
+
 ```json
 {
   "question": "How many customers do we have?"
@@ -601,13 +648,12 @@ Convert a natural language question to SQL and execute it.
 ```
 
 **Response:**
+
 ```json
 {
   "question": "How many customers do we have?",
   "sql_query": "SELECT COUNT(*) as customer_count FROM customers;",
-  "results": [
-    {"customer_count": 150}
-  ],
+  "results": [{ "customer_count": 150 }],
   "success": true
 }
 ```
@@ -617,6 +663,7 @@ Convert a natural language question to SQL and execute it.
 Health check endpoint to verify the API is running.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -629,6 +676,7 @@ Health check endpoint to verify the API is running.
 Root endpoint returning basic API metadata.
 
 **Response:**
+
 ```json
 {
   "name": "Text-to-SQL API",
@@ -643,6 +691,7 @@ Root endpoint returning basic API metadata.
 Return a human-readable summary of the current database schema. Useful for debugging and development.
 
 **Response:**
+
 ```json
 {
   "schema": "Table: customers\nColumns: id (INTEGER), name (TEXT), email (TEXT), city (TEXT), created_at (TIMESTAMP)\n\nTable: orders\nColumns: id (INTEGER), customer_id (INTEGER), product_name (TEXT), quantity (INTEGER), total_amount (DECIMAL), order_date (TIMESTAMP)"
@@ -654,11 +703,12 @@ Return a human-readable summary of the current database schema. Useful for debug
 Return the list of tables with their row counts. Useful for diagnostics and quick sanity checks.
 
 **Response:**
+
 ```json
 {
   "tables": [
-    {"name": "customers", "row_count": 14},
-    {"name": "orders", "row_count": 24}
+    { "name": "customers", "row_count": 14 },
+    { "name": "orders", "row_count": 24 }
   ]
 }
 ```
@@ -668,21 +718,25 @@ Return the list of tables with their row counts. Useful for diagnostics and quic
 The following prompts highlight common analysis tasks supported by the seeded dataset:
 
 ### Counting & Aggregations
+
 - "How many customers are in the database?"
 - "What is the total revenue?"
 - "How many orders were placed last month?"
 
 ### Filtering & Segmentation
+
 - "List all customers from New York."
 - "Show orders above $500."
 - "List customers who joined in 2024."
 
 ### Grouping & Sorting
+
 - "Top 10 customers by revenue."
 - "Products sorted by popularity."
 - "Monthly sales trends."
 
 ### Operational Insights
+
 - "Which customer has placed the most orders?"
 - "What are the top 5 selling products?"
 - "Show me the average order value by customer."
@@ -708,12 +762,14 @@ curl -X POST "http://localhost:8000/query" \
 The repository ships with unit, integration, and end-to-end test suites. Pytest is configured to collect coverage automatically (see `pytest.ini`).
 
 ### Quick Start
+
 ```bash
 # Run the full test matrix with coverage enforcement (>=85%)
 pytest
 ```
 
 ### Focused Suites
+
 ```bash
 # Unit tests
 pytest tests/test_models.py tests/test_main.py tests/test_openai.py -v
@@ -726,6 +782,7 @@ pytest tests/test_e2e.py -v
 ```
 
 ### Coverage Reports
+
 ```bash
 # Terminal summary with missing lines
 pytest --cov=app --cov-report=term-missing
@@ -736,6 +793,7 @@ open htmlcov/index.html
 ```
 
 Key coverage targets:
+
 - `app/database.py`: 100%
 - `app/openai_client.py`: >90%
 - `app/main.py`: >85%
@@ -744,6 +802,7 @@ Key coverage targets:
 ## API Testing with Postman
 
 A ready-to-use Postman collection is available at `docs/postman/text2sql-api.postman_collection.json`. Import it to exercise:
+
 - Health check request
 - Representative query prompts (happy-path and error scenarios)
 - Environment variable placeholders for `OPENAI_API_KEY` and API base URL
@@ -751,6 +810,7 @@ A ready-to-use Postman collection is available at `docs/postman/text2sql-api.pos
 ## Performance Benchmarks
 
 Automated end-to-end tests assert the following baseline targets:
+
 - Query generation and execution: <3 seconds (wall-clock)
 - Database reads: <500ms for seeded dataset queries
 - FastAPI startup: <10 seconds on a typical developer laptop
@@ -762,6 +822,7 @@ These checks run as part of `tests/test_e2e.py`. Use `pytest -k performance` (or
 The application includes a sample database with the following tables:
 
 ### customers
+
 - id (INTEGER PRIMARY KEY)
 - name (TEXT)
 - email (TEXT)
@@ -769,6 +830,7 @@ The application includes a sample database with the following tables:
 - created_at (TIMESTAMP)
 
 ### orders
+
 - id (INTEGER PRIMARY KEY)
 - customer_id (INTEGER FOREIGN KEY)
 - product_name (TEXT)
@@ -799,6 +861,22 @@ For Streamlit deployment:
 API_URL=https://your-backend-url.onrender.com
 ```
 
+### TypeScript Stack Environment Templates
+
+Phase 1.5 introduces dedicated template files for the NestJS backend under `packages/backend/env-templates/`:
+
+- `.env.development.example` – Local development defaults (Node 20 + PostgreSQL on localhost).
+- `.env.test.example` – Isolated test database/port for CI environments.
+- `.env.production.example` – Hardened defaults for container images or managed hosting.
+
+Copy the template that matches your scenario to `.env.local` or `.env` inside `packages/backend/`, then override:
+
+```bash
+cp packages/backend/env-templates/.env.development.example packages/backend/.env.local
+```
+
+> **Tip:** When running the TypeScript stack, set `DATABASE_URL` to a PostgreSQL DSN (the Docker Compose stack provides `postgresql://postgres:postgres@postgres:5432/text2sql`).
+
 ## Cloud Deployment
 
 This project is ready to deploy to production! See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for comprehensive guides.
@@ -806,6 +884,7 @@ This project is ready to deploy to production! See [DEPLOYMENT.md](docs/DEPLOYME
 ### Backend Deployment
 
 Deploy the FastAPI backend to:
+
 - **[Render](https://render.com)** - Uses `.deploy/render.yaml` (free tier available)
 - **[Railway](https://railway.app)** - Uses `.deploy/railway.json` (free tier available)
 - **[Fly.io](https://fly.io)** - Manual setup (free tier available)
@@ -814,11 +893,13 @@ Deploy the FastAPI backend to:
 ### Frontend Deployment
 
 Deploy the Streamlit UI to:
+
 - **[Streamlit Cloud](https://streamlit.io/cloud)** - Free hosting for Streamlit apps
 
 ### Quick Deploy Steps
 
 1. **Deploy Backend** (choose one platform):
+
    ```bash
    # Render: Connect GitHub repo, auto-detects .deploy/render.yaml
    # Railway: Connect GitHub repo, auto-detects .deploy/railway.json
@@ -826,6 +907,7 @@ Deploy the Streamlit UI to:
    ```
 
 2. **Deploy Frontend**:
+
    ```bash
    # Streamlit Cloud: Connect GitHub, point to streamlit_app/streamlit_app.py
    # Set API_URL environment variable to your backend URL
@@ -854,6 +936,7 @@ Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 ### TypeScript/NestJS Stack 🚧 (In Progress)
 
 #### Completed
+
 - [x] **Phase 1.1**: Initialize TypeScript Monorepo
   - [x] pnpm workspace configuration
   - [x] TypeScript project references
@@ -866,6 +949,7 @@ Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
   - [x] Global exception filters and validation
 
 #### In Progress
+
 - [ ] **Phase 2**: AI Provider Abstraction Layer
   - [ ] Design provider interface
   - [ ] Implement OpenAI provider
@@ -874,6 +958,7 @@ Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
   - [ ] Provider configuration and switching
 
 #### Planned
+
 - [ ] **Phase 3**: NestJS Backend Implementation
   - [ ] Port database models to TypeORM
   - [ ] Implement SQL validation and security
@@ -925,6 +1010,7 @@ Contributions are welcome! This project has two active development tracks:
 7. Open a Pull Request
 
 **Guidelines:**
+
 - Maintain 85%+ test coverage
 - Follow Black formatting (120 char line length)
 - Pass all CI checks (see [docs/ci-cd-pipeline.md](docs/ci-cd-pipeline.md))
@@ -946,6 +1032,7 @@ Contributions are welcome! This project has two active development tracks:
 7. Open a Pull Request
 
 **Guidelines:**
+
 - Follow TypeScript strict mode
 - Add JSDoc comments to all public APIs
 - Use ESLint and Prettier configurations
@@ -964,10 +1051,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Screenshots
 
 ### Streamlit Web Interface
-*(Add screenshots after deployment)*
+
+_(Add screenshots after deployment)_
 
 ### API Documentation
+
 Access interactive API docs at `/docs`:
+
 - Swagger UI with try-it-out functionality
 - Complete request/response schemas
 - Example queries and responses
@@ -975,6 +1065,7 @@ Access interactive API docs at `/docs`:
 ## Project Documentation
 
 ### Python/FastAPI Documentation
+
 - **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Complete deployment guide for all platforms
 - **[docs/CLAUDE.md](docs/CLAUDE.md)** - Developer guide for AI assistants
 - **[docs/database.md](docs/database.md)** - Database layer documentation (99% coverage)
@@ -982,6 +1073,7 @@ Access interactive API docs at `/docs`:
 - **[streamlit_app/README.md](streamlit_app/README.md)** - Frontend-specific documentation
 
 ### TypeScript/NestJS Documentation
+
 - **[MONOREPO.md](MONOREPO.md)** - TypeScript monorepo architecture and migration guide
 - **[packages/backend/README.md](packages/backend/README.md)** - NestJS backend documentation
 - **[packages/shared/README.md](packages/shared/README.md)** - Shared types package documentation
