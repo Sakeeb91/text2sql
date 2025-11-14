@@ -4,7 +4,20 @@
  * This module provides typed configuration values loaded from environment variables.
  */
 
-export const configuration = () => ({
+interface AppConfig {
+  port: number;
+  nodeEnv: string;
+  database: {
+    url: string;
+  };
+  openai: {
+    apiKey: string;
+    model: string;
+    temperature: number;
+  };
+}
+
+export const configuration = (): AppConfig => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
   nodeEnv: process.env.NODE_ENV ?? 'development',
   database: {
@@ -16,4 +29,3 @@ export const configuration = () => ({
     temperature: parseFloat(process.env.OPENAI_TEMPERATURE ?? '0.1'),
   },
 });
-

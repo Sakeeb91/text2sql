@@ -4,7 +4,7 @@
  * Uses Joi to validate environment variables at application startup.
  */
 
-import * as Joi from 'joi';
+import Joi from 'joi';
 
 export const validationSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
@@ -14,4 +14,3 @@ export const validationSchema = Joi.object({
   OPENAI_MODEL: Joi.string().default('gpt-4o-mini'),
   OPENAI_TEMPERATURE: Joi.number().min(0).max(2).default(0.1),
 });
-

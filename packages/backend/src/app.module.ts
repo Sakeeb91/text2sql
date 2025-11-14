@@ -7,12 +7,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation.schema';
 import { AiProviderModule } from './modules/ai-provider/ai-provider.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { HealthModule } from './modules/health/health.module';
 import { QueryModule } from './modules/query/query.module';
-import { configuration } from './config/configuration';
-import { validationSchema } from './config/validation.schema';
 
 @Module({
   imports: [
@@ -35,4 +35,3 @@ import { validationSchema } from './config/validation.schema';
   ],
 })
 export class AppModule {}
-

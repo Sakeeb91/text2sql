@@ -6,7 +6,6 @@
 
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
 import { HealthResponse } from '@text2sql/shared';
 
 @ApiTags('health')
@@ -26,4 +25,3 @@ export class HealthController {
     };
   }
 }
-

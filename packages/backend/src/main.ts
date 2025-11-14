@@ -5,7 +5,7 @@
  * and starts the HTTP server.
  */
 
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -13,6 +13,7 @@ import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap(): Promise<void> {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend communication
@@ -56,12 +57,12 @@ async function bootstrap(): Promise<void> {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
 
-  console.log(`Application is running on: http://localhost:${port}`);
-  console.log(`Swagger documentation available at: http://localhost:${port}/docs`);
+  logger.log(`Application is running on: http://localhost:${port}`);
+  logger.log(`Swagger documentation available at: http://localhost:${port}/docs`);
 }
 
 bootstrap().catch((error) => {
-  console.error('Failed to start application:', error);
+  const logger = new Logger('Bootstrap');
+  logger.error('Failed to start application', error as Error);
   process.exit(1);
 });
-

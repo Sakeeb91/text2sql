@@ -4,13 +4,7 @@
  * Catches all exceptions and returns consistent error responses.
  */
 
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 
 @Catch()
@@ -28,7 +22,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message =
         typeof exceptionResponse === 'string'
           ? exceptionResponse
-          : (exceptionResponse as { message?: string }).message ?? message;
+          : ((exceptionResponse as { message?: string })?.message ?? message);
     } else if (exception instanceof Error) {
       message = exception.message;
     }
@@ -40,4 +34,3 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     });
   }
 }
-
