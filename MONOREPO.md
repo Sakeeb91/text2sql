@@ -145,6 +145,13 @@ Each package has its own scripts:
 - `pnpm lint` - Lint the package
 - `pnpm clean` - Clean build artifacts
 
+## DevOps (Phase 1.5)
+
+- `packages/backend/Dockerfile` provides both development (`target=development`) and production images with pnpm caching, non-root user, and health checks.
+- `docker-compose.yml` ships a `typescript` profile (`ts-postgres`, `ts-backend`, `ts-frontend`) for local NestJS development against PostgreSQL.
+- Environment templates live in `packages/backend/env-templates/` and map directly to development, test, and production scenarios (Compose + CI share them).
+- See `docs/typescript-devops.md` for detailed workflows covering Docker builds, Compose commands, and troubleshooting tips.
+
 ## Code Quality
 
 ### TypeScript
