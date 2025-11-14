@@ -28,6 +28,7 @@ You have three options for deploying the FastAPI backend:
 ### Option A: Render (Recommended for Beginners)
 
 **Why Render?**
+
 - Free tier with persistent storage
 - Easy setup with `.deploy/render.yaml`
 - Automatic deployments from Git
@@ -55,6 +56,7 @@ You have three options for deploying the FastAPI backend:
    ```
 
 **Important Notes:**
+
 - Free tier spins down after 15 minutes of inactivity
 - First request after sleep takes ~30 seconds
 - Database persists on a 1GB disk
@@ -64,6 +66,7 @@ You have three options for deploying the FastAPI backend:
 ### Option B: Railway
 
 **Why Railway?**
+
 - Very fast deployments
 - Generous free tier ($5/month credits)
 - Great developer experience
@@ -97,6 +100,7 @@ You have three options for deploying the FastAPI backend:
 ### Option C: Fly.io
 
 **Why Fly.io?**
+
 - Best for global deployments
 - Runs on edge locations
 - Free tier includes 3 VMs
@@ -104,6 +108,7 @@ You have three options for deploying the FastAPI backend:
 **Steps:**
 
 1. **Install Fly CLI:**
+
    ```bash
    # macOS
    brew install flyctl
@@ -113,21 +118,25 @@ You have three options for deploying the FastAPI backend:
    ```
 
 2. **Login:**
+
    ```bash
    fly auth login
    ```
 
 3. **Initialize:**
+
    ```bash
    fly launch
    ```
 
 4. **Set secrets:**
+
    ```bash
    fly secrets set OPENAI_API_KEY=your_key_here
    ```
 
 5. **Deploy:**
+
    ```bash
    fly deploy
    ```
@@ -188,6 +197,7 @@ export CORS_ALLOW_ORIGINS="https://your-app-name.streamlit.app"
 ### Deploy to Streamlit Cloud (Free)
 
 1. **Push your code to GitHub** (if not already)
+
    ```bash
    git add streamlit_app/
    git commit -m "Add Streamlit frontend"
@@ -206,10 +216,12 @@ export CORS_ALLOW_ORIGINS="https://your-app-name.streamlit.app"
    - **Main file path:** `streamlit_app/streamlit_app.py`
 
 6. **Advanced settings → Environment variables:**
+
    ```
    API_URL=https://your-fastapi-backend.onrender.com
    ```
-   *(Replace with your actual backend URL from Part 1)*
+
+   _(Replace with your actual backend URL from Part 1)_
 
 7. **Click "Deploy"**
 
@@ -225,6 +237,7 @@ export CORS_ALLOW_ORIGINS="https://your-app-name.streamlit.app"
 ## Part 4: Testing the Full Stack
 
 1. **Test the backend directly:**
+
    ```bash
    curl -X POST "https://your-backend.onrender.com/query" \
      -H "Content-Type: application/json" \
@@ -245,15 +258,16 @@ export CORS_ALLOW_ORIGINS="https://your-app-name.streamlit.app"
 
 ## Cost Breakdown
 
-| Service | Free Tier | Limitations |
-|---------|-----------|-------------|
-| **Render** | 750 hours/month | Spins down after 15 min inactivity, 1GB storage |
-| **Railway** | $5/month credits | No spin-down, usage-based billing |
-| **Fly.io** | 3 shared VMs | 160GB data transfer/month |
-| **Streamlit Cloud** | Unlimited apps | Community tier, 1GB RAM per app |
-| **OpenAI API** | Pay-as-you-go | GPT-4o-mini: ~$0.15 per 1M input tokens |
+| Service             | Free Tier        | Limitations                                     |
+| ------------------- | ---------------- | ----------------------------------------------- |
+| **Render**          | 750 hours/month  | Spins down after 15 min inactivity, 1GB storage |
+| **Railway**         | $5/month credits | No spin-down, usage-based billing               |
+| **Fly.io**          | 3 shared VMs     | 160GB data transfer/month                       |
+| **Streamlit Cloud** | Unlimited apps   | Community tier, 1GB RAM per app                 |
+| **OpenAI API**      | Pay-as-you-go    | GPT-4o-mini: ~$0.15 per 1M input tokens         |
 
 **Monthly Cost Estimate (Low Usage):**
+
 - Backend: $0 (free tier)
 - Frontend: $0 (Streamlit free)
 - OpenAI API: $1-5 (depends on usage)
@@ -267,16 +281,19 @@ export CORS_ALLOW_ORIGINS="https://your-app-name.streamlit.app"
 ### Backend Monitoring
 
 **Render:**
+
 - Dashboard: https://dashboard.render.com
 - View logs: Click on service → "Logs" tab
 - Metrics: CPU, Memory, Requests
 
 **Railway:**
+
 - Dashboard: https://railway.app/dashboard
 - View logs: Click project → "Deployments" → "View Logs"
 - Metrics: Memory, Network, Build times
 
 **Fly.io:**
+
 ```bash
 fly logs
 fly status
@@ -285,6 +302,7 @@ fly status
 ### Frontend Monitoring
 
 **Streamlit Cloud:**
+
 - Dashboard: https://streamlit.io/cloud
 - View logs: Click app → "Manage app" → "Logs"
 - Reboot app: "Reboot app" button
@@ -306,14 +324,17 @@ Set up automated monitoring with [UptimeRobot](https://uptimerobot.com/) (free):
 ### Update Backend
 
 **Render/Railway (Auto-deploy enabled):**
+
 ```bash
 git add .
 git commit -m "Update backend"
 git push
 ```
-*(Automatically deploys)*
+
+_(Automatically deploys)_
 
 **Fly.io:**
+
 ```bash
 git add .
 git commit -m "Update backend"
@@ -324,12 +345,14 @@ fly deploy
 ### Update Frontend
 
 **Streamlit Cloud (Auto-deploy):**
+
 ```bash
 git add streamlit_app/
 git commit -m "Update frontend"
 git push
 ```
-*(Automatically deploys in ~2 minutes)*
+
+_(Automatically deploys in ~2 minutes)_
 
 ---
 
@@ -338,16 +361,19 @@ git push
 ### Backend Issues
 
 **Problem:** Database not persisting
+
 - **Render:** Check that disk is mounted at `/opt/render/project/src/data`
 - **Railway:** Add a volume in settings
 - **Fly.io:** Configure persistent volumes
 
 **Problem:** 502 Bad Gateway
+
 - Check logs for errors
 - Verify `PORT` environment variable is used
 - Ensure app starts successfully
 
 **Problem:** OpenAI API errors
+
 - Verify `OPENAI_API_KEY` is set correctly
 - Check OpenAI account has credits
 - Review rate limits
@@ -355,16 +381,19 @@ git push
 ### Frontend Issues
 
 **Problem:** "API is unreachable"
+
 - Check `API_URL` environment variable
 - Verify CORS is enabled on backend
 - Test backend URL directly in browser
 
 **Problem:** Slow loading
+
 - Free tier backend spins down (first request takes 30s)
 - Consider upgrading to paid tier for always-on
 - Add caching to backend
 
 **Problem:** App crashes
+
 - Check Streamlit Cloud logs
 - Verify `requirements.txt` has all dependencies
 - Ensure `streamlit_app.py` has no syntax errors
@@ -411,5 +440,45 @@ Before going to production:
 - **Backend issues:** Check GitHub Actions logs, backend service logs
 - **Frontend issues:** Check Streamlit Cloud logs
 - **API issues:** Review FastAPI docs at `/docs` endpoint
+
+---
+
+## Part 5: TypeScript Stack (Phase 1.5)
+
+While the FastAPI stack is production-ready today, Phase 1.5 adds containerization + DevOps plumbing for the NestJS backend so it can mature in parallel.
+
+### Local Docker Compose
+
+1. **Copy an env template:**
+   ```bash
+   cp packages/backend/env-templates/.env.development.example packages/backend/.env.local
+   ```
+2. **Start the TypeScript profile:**
+   ```bash
+   docker compose --profile typescript up ts-postgres ts-backend
+   ```
+3. **Hit the NestJS API:** http://localhost:3000/health
+
+Services included in the profile:
+
+| Service       | Purpose                    | Notes                                        |
+| ------------- | -------------------------- | -------------------------------------------- |
+| `ts-postgres` | PostgreSQL 15 w/ volume    | Stores data in the `ts-postgres-data` volume |
+| `ts-backend`  | NestJS API with hot reload | Binds source directories for live editing    |
+| `ts-frontend` | Placeholder container      | Keeps env wiring ready for the Next.js app   |
+
+### Docker Images
+
+- `packages/backend/Dockerfile` is multi-stage:
+  - `builder` for pnpm workspace install and compilation
+  - `development` target for Compose (`pnpm --filter @text2sql/backend dev`)
+  - `production` image (<200MB) with health checks and non-root `appuser`
+
+### CI/CD
+
+- `.github/workflows/ts-ci.yml` mirrors Python’s rigor with linting, Vitest, coverage, build verification, environment validation, performance smoke tests, and a PR summary.
+- Branch protection should require the `TypeScript Required Checks` job alongside the Python ones.
+
+See [docs/typescript-devops.md](./typescript-devops.md) for the full breakdown of commands and troubleshooting tips.
 
 Good luck with your deployment! 🚀
