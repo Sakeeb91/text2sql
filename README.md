@@ -18,6 +18,7 @@ The system is designed with security in mind, generating only read-only SELECT q
 A modern TypeScript monorepo architecture with:
 
 - **NestJS Backend**: Modular backend with AI provider abstraction layer
+- **AI Provider Switching**: Runtime selection between OpenAI, Anthropic, and custom APIs
 - **Next.js Frontend**: (Planned) Modern React-based UI
 - **Shared Types Package**: Type-safe contracts across the stack
 
@@ -88,7 +89,7 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 
 - NestJS modular architecture
 - TypeORM for database operations
-- AI Provider Abstraction Layer (multi-provider support)
+- AI Provider Abstraction Layer (multi-provider support with validation + factory registry)
 - Global exception filters and validation pipes
 - Swagger documentation auto-generation
 - Type-safe API contracts with shared types
@@ -107,6 +108,10 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 - API request/response types
 - Database entity types
 - Schema metadata types
+
+#### Configuring TypeScript AI Providers
+
+The Nest backend now loads provider credentials from environment variables such as `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `CUSTOM_API_KEY`. Select the active provider with `AI_PROVIDER_DEFAULT` and optionally override `*_MODEL`, `*_BASE_URL`, `*_TEMPERATURE`, and `*_MAX_TOKENS`. See `packages/backend/env-templates/.env.example` for a complete template and [docs/ai-provider-layer.md](docs/ai-provider-layer.md) for a high-level overview.
 
 ## Architecture
 
