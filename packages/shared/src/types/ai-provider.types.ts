@@ -27,3 +27,21 @@ export interface AiProviderConfig {
   temperature?: number;
   maxTokens?: number;
 }
+
+/**
+ * Payload sent to an AI provider when requesting SQL generation.
+ */
+export interface SqlGenerationRequest {
+  question: string;
+  databaseSchema: string;
+  temperature?: number;
+}
+
+/**
+ * Standardized response returned by an AI provider.
+ */
+export interface SqlGenerationResponse {
+  sqlQuery: string;
+  confidence?: number;
+  providerMetadata?: Record<string, unknown>;
+}
