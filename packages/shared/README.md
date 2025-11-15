@@ -79,4 +79,3 @@ When adding new types:
 ## License
 
 MIT
-

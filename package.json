@@ -16,14 +16,14 @@
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,js,jsx,json,md}\" \"tsconfig*.json\" \"package.json\" \"pnpm-workspace.yaml\" \".github/workflows/ts-*.yml\"",
+    "format:check": "prettier --check \"packages/**/*.{ts,tsx,js,jsx,json,md}\" \"tsconfig*.json\" \"package.json\" \"pnpm-workspace.yaml\" \".github/workflows/ts-*.yml\"",
     "type-check": "pnpm -r type-check",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean && rm -rf node_modules",
     "prepare": "husky install",
     "ts:dev": "pnpm --filter @text2sql/backend dev",
-    "ts:build": "pnpm --filter @text2sql/backend build",
+    "ts:build": "pnpm --filter @text2sql/backend... build",
     "ts:lint": "pnpm --filter @text2sql/backend lint",
     "ts:type-check": "pnpm --filter @text2sql/backend type-check",
     "ts:test": "pnpm --filter @text2sql/backend test",
@@ -49,5 +49,10 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.15.1"
+  "packageManager": "pnpm@8.15.1",
+  "pnpm": {
+    "overrides": {
+      "js-yaml": "^4.1.1"
+    }
+  }
 }

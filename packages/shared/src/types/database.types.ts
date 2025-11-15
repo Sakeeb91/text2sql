@@ -1,13 +1,13 @@
 /**
  * Database schema types for the Text-to-SQL application.
- * 
+ *
  * These types represent the structure of the database tables
  * and are used for type-safe database operations.
  */
 
 /**
  * Customer entity representing a user in the system.
- * 
+ *
  * @property id - Unique customer identifier (auto-incremented)
  * @property name - Full name of the customer
  * @property email - Email address (unique constraint)
@@ -24,7 +24,7 @@ export interface Customer {
 
 /**
  * Order entity representing a purchase transaction.
- * 
+ *
  * @property id - Unique order identifier (auto-incremented)
  * @property customer_id - Foreign key reference to customers table
  * @property product_name - Name of the purchased product
@@ -43,7 +43,7 @@ export interface Order {
 
 /**
  * Database schema metadata for a single table.
- * 
+ *
  * @property tableName - Name of the database table
  * @property columns - Array of column definitions
  */
@@ -54,7 +54,7 @@ export interface TableSchema {
 
 /**
  * Column definition metadata.
- * 
+ *
  * @property name - Column name
  * @property type - SQL data type
  * @property nullable - Whether the column accepts NULL values
@@ -71,4 +71,3 @@ export interface ColumnDefinition {
     column: string;
   };
 }
-

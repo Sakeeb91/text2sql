@@ -17,8 +17,5 @@
   },
   "include": ["src/**/*", "next-env.d.ts"],
   "exclude": ["node_modules", ".next", "out", "**/*.spec.ts", "**/*.test.ts"],
-  "references": [
-    { "path": "../shared" }
-  ]
+  "references": [{ "path": "../shared" }]
 }
-

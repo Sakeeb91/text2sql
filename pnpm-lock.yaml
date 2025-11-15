@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  js-yaml: ^4.1.1
+
 importers:
 
   .:
@@ -1038,7 +1041,7 @@ packages:
       '@nestjs/mapped-types': 2.0.5(@nestjs/common@10.4.20)(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.1.14)
       class-transformer: 0.5.1
       class-validator: 0.14.2
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       lodash: 4.17.21
       path-to-regexp: 3.3.0
       reflect-metadata: 0.1.14
@@ -4089,19 +4092,11 @@ packages:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
     dev: true
 
-  /js-yaml@4.1.0:
-    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
-    hasBin: true
-    dependencies:
-      argparse: 2.0.1
-    dev: false
-
   /js-yaml@4.1.1:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
     dependencies:
       argparse: 2.0.1
-    dev: true
 
   /json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}

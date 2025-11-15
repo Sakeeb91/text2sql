@@ -26,4 +26,3 @@ This package is currently a placeholder. Implementation will begin in Phase 4.1 
 ## License
 
 MIT
-
