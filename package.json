@@ -26,8 +26,8 @@
     "ts:build": "pnpm --filter @text2sql/backend... build",
     "ts:lint": "pnpm --filter @text2sql/backend lint",
     "ts:type-check": "pnpm --filter @text2sql/shared build && pnpm --filter @text2sql/backend type-check",
-    "ts:test": "pnpm --filter @text2sql/backend test",
-    "ts:test:coverage": "pnpm --filter @text2sql/backend test:coverage",
+    "ts:test": "pnpm --filter @text2sql/shared build && pnpm --filter @text2sql/backend test",
+    "ts:test:coverage": "pnpm --filter @text2sql/shared build && pnpm --filter @text2sql/backend test:coverage",
     "ts:compose": "docker compose --profile typescript up ts-postgres ts-backend",
     "ts:env:validate": "tsx packages/backend/scripts/validate-database-config.ts"
   },
