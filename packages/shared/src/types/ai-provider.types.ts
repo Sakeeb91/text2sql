@@ -72,7 +72,7 @@ export class ProviderError extends Error {
     message: string,
     public readonly providerType: AiProviderType,
     public readonly context?: ProviderErrorContext,
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message);
     this.name = 'ProviderError';
