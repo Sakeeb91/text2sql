@@ -45,3 +45,13 @@ export interface SqlGenerationResponse {
   confidence?: number;
   providerMetadata?: Record<string, unknown>;
 }
+
+/**
+ * Contract implemented by every AI provider integration.
+ */
+export interface IAiProvider {
+  readonly type: AiProviderType;
+  generateSql(request: SqlGenerationRequest): Promise<SqlGenerationResponse>;
+  validateConfig(): Promise<boolean>;
+  healthCheck(): Promise<boolean>;
+}
