@@ -6,6 +6,7 @@ import { AiProviderConfig, AiProviderType } from '@text2sql/shared';
 import {
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -19,6 +20,7 @@ export class AiProviderConfigDto implements AiProviderConfig {
   type!: AiProviderType;
 
   @IsString()
+  @IsNotEmpty()
   apiKey!: string;
 
   @IsOptional()
