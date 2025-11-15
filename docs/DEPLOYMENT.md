@@ -451,13 +451,21 @@ While the FastAPI stack is production-ready today, Phase 1.5 adds containerizati
 
 1. **Copy an env template:**
    ```bash
-   cp packages/backend/env-templates/.env.development.example packages/backend/.env.local
+   cp packages/backend/env-templates/.env.example packages/backend/.env.local
    ```
 2. **Start the TypeScript profile:**
    ```bash
    docker compose --profile typescript up ts-postgres ts-backend
    ```
 3. **Hit the NestJS API:** http://localhost:3000/health
+
+4. **Provide AI credentials** by editing `.env.local`:
+   - `AI_PROVIDER_DEFAULT=openai|anthropic|custom`
+   - `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_TEMPERATURE`
+   - `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `ANTHROPIC_TEMPERATURE`
+   - `CUSTOM_API_KEY`, `CUSTOM_API_BASE_URL`
+
+   Each provider also supports `*_BASE_URL` and `*_MAX_TOKENS`. See `docs/ai-provider-layer.md` for the full matrix.
 
 Services included in the profile:
 
