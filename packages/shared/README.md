@@ -46,6 +46,15 @@ function handleQuery(request: QueryRequest): QueryResponse {
 - **TableSchema**: Database table metadata
 - **ColumnDefinition**: Database column metadata
 
+### AI Provider Types
+
+- **AiProviderType**: Enum listing supported providers (OpenAI, Anthropic, custom)
+- **AiProviderConfig**: Configuration contract shared by all providers
+- **SqlGenerationRequest**: Payload passed to provider implementations
+- **SqlGenerationResponse**: Standardized provider response format
+- **IAiProvider**: Interface describing provider capabilities
+- **ProviderError**: Base error plus specialized config/validation variants
+
 ## Development
 
 ```bash
