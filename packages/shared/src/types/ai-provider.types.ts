@@ -55,3 +55,56 @@ export interface IAiProvider {
   validateConfig(): Promise<boolean>;
   healthCheck(): Promise<boolean>;
 }
+
+/**
+ * Structured context that can be attached to provider errors.
+ */
+export interface ProviderErrorContext {
+  operation?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Base error for AI provider failures.
+ */
+export class ProviderError extends Error {
+  constructor(
+    message: string,
+    public readonly providerType: AiProviderType,
+    public readonly context?: ProviderErrorContext,
+    public readonly cause?: Error
+  ) {
+    super(message);
+    this.name = 'ProviderError';
+  }
+}
+
+/**
+ * Error thrown when provider configuration is invalid.
+ */
+export class ProviderConfigurationError extends ProviderError {
+  constructor(
+    providerType: AiProviderType,
+    message = 'Invalid AI provider configuration',
+    context?: ProviderErrorContext,
+    cause?: Error
+  ) {
+    super(message, providerType, context, cause);
+    this.name = 'ProviderConfigurationError';
+  }
+}
+
+/**
+ * Error thrown when provider validation or health checks fail.
+ */
+export class ProviderValidationError extends ProviderError {
+  constructor(
+    providerType: AiProviderType,
+    message = 'AI provider validation failed',
+    context?: ProviderErrorContext,
+    cause?: Error
+  ) {
+    super(message, providerType, context, cause);
+    this.name = 'ProviderValidationError';
+  }
+}
