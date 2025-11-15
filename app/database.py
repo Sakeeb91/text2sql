@@ -13,7 +13,7 @@ import os
 from datetime import datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Generator, Iterable
+from typing import Any, Generator, Iterable, TypedDict
 
 from dotenv import load_dotenv
 from sqlalchemy import (
@@ -90,6 +90,13 @@ class DatabaseExecutionError(RuntimeError):
     """Raised when executing a SQL statement fails."""
 
 
+class TableRowCount(TypedDict):
+    """Typed representation of table metadata returned by get_table_row_counts."""
+
+    name: str
+    row_count: int
+
+
 def get_db() -> Generator[Session, None, None]:
     """Provide a context-managed SQLAlchemy session generator.
 
@@ -150,7 +157,7 @@ def get_database_schema() -> str:
     return "\n".join(lines).strip()
 
 
-def get_table_row_counts() -> list[dict[str, int | str]]:
+def get_table_row_counts() -> list[TableRowCount]:
     """Return a list of tables with their approximate row counts.
 
     This helper performs a COUNT(*) per table. For the small, seeded SQLite dataset
@@ -161,7 +168,7 @@ def get_table_row_counts() -> list[dict[str, int | str]]:
     if not table_names:
         return []
 
-    rows: list[dict[str, int | str]] = []
+    rows: list[TableRowCount] = []
     with engine.connect() as connection:
         for table_name in table_names:
             count_value = connection.execute(select(func.count()).select_from(text(table_name))).scalar_one()

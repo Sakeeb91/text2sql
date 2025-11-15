@@ -18,7 +18,14 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import database, openai_client
-from app.models import HealthResponse, QueryRequest, QueryResponse, SchemaResponse, TablesResponse
+from app.models import (
+    HealthResponse,
+    QueryRequest,
+    QueryResponse,
+    SchemaResponse,
+    TableInfo,
+    TablesResponse,
+)
 
 app = FastAPI(
     title="Text-to-SQL API",
@@ -99,4 +106,5 @@ async def get_schema() -> SchemaResponse:
 async def list_tables() -> TablesResponse:
     """List all database tables with their row counts."""
     table_rows = database.get_table_row_counts()
-    return TablesResponse(tables=table_rows)
+    table_info = [TableInfo(name=row["name"], row_count=row["row_count"]) for row in table_rows]
+    return TablesResponse(tables=table_info)

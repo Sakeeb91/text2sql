@@ -51,7 +51,9 @@ class HealthResponse(BaseModel):
 class SchemaResponse(BaseModel):
     """Database schema response payload."""
 
-    schema: str
+    # BaseModel already exposes a .schema() helper; ignore the clash so the API can
+    # keep returning a field literally named "schema".
+    schema: str  # type: ignore[assignment]
 
 
 class TableInfo(BaseModel):
