@@ -12,3 +12,18 @@ export type { QueryRequest, QueryResponse, HealthResponse } from './api.types';
 
 // Re-export all database types
 export type { Customer, Order, TableSchema, ColumnDefinition } from './database.types';
+
+// Re-export all AI provider types
+export {
+  AiProviderType,
+  ProviderError,
+  ProviderConfigurationError,
+  ProviderValidationError,
+} from './ai-provider.types';
+export type {
+  AiProviderConfig,
+  SqlGenerationRequest,
+  SqlGenerationResponse,
+  IAiProvider,
+  ProviderErrorContext,
+} from './ai-provider.types';
