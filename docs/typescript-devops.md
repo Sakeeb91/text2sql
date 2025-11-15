@@ -61,6 +61,8 @@ Only source directories are mounted into the backend container:
 - Root `.env` continues to hold shared API credentials.
 - Package-specific templates live under `packages/backend/env-templates/`.
 - For Compose, override `DATABASE_URL` with the service name (`postgresql://postgres:postgres@ts-postgres:5432/text2sql`).
+- `packages/backend/env-templates/.env.example` documents the AI provider settings (`AI_PROVIDER_DEFAULT`, `OPENAI_*`, `ANTHROPIC_*`, `CUSTOM_API_*`). Copy it to `.env.local` and fill the provider you plan to exercise. Unused providers can keep blank keys.
+- Reference [docs/ai-provider-layer.md](./ai-provider-layer.md) for details on the abstraction and which env vars map to each provider.
 
 ## Health Checks
 
