@@ -26,7 +26,7 @@ import {
 type ResponsesResponse = Awaited<ReturnType<OpenAIClient['responses']['create']>>;
 type ResponseMessage = {
   role: 'system' | 'user';
-  content: Array<{ type: 'text'; text: string }>;
+  content: Array<{ type: 'input_text'; text: string }>;
 };
 
 export class OpenAiProvider extends BaseAiProvider {
@@ -69,11 +69,11 @@ export class OpenAiProvider extends BaseAiProvider {
     return [
       {
         role: 'system',
-        content: [{ type: 'text', text: buildSqlSystemPrompt(schema) }],
+        content: [{ type: 'input_text', text: buildSqlSystemPrompt(schema) }],
       },
       {
         role: 'user',
-        content: [{ type: 'text', text: question }],
+        content: [{ type: 'input_text', text: question }],
       },
     ];
   }
@@ -183,7 +183,6 @@ export class OpenAiProvider extends BaseAiProvider {
     const responseOptions: Parameters<OpenAIClient['responses']['create']>[0] = {
       model: this.model,
       temperature,
-      response_format: { type: 'json_object' },
       input,
     };
 
@@ -199,7 +198,7 @@ export class OpenAiProvider extends BaseAiProvider {
     return this.parseSqlPayload(response);
   }
 
-  async validateConfig(): Promise<boolean> {
+  override async validateConfig(): Promise<boolean> {
     await super.validateConfig();
 
     if (this.model.length === 0) {
@@ -225,9 +224,9 @@ export class OpenAiProvider extends BaseAiProvider {
     }
   }
 
-  async healthCheck(): Promise<boolean> {
+  override async healthCheck(): Promise<boolean> {
     try {
-      await this.client.models.list({ limit: 1 });
+      await this.client.models.list();
       return true;
     } catch (error) {
       throw new ProviderValidationError(

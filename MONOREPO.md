@@ -260,6 +260,8 @@ This monorepo is part of a phased migration from Python/FastAPI to TypeScript/Ne
 - [x] Add custom provider support
 - [x] Provider configuration/validation + dynamic switching
 
+> The TypeScript stack now mirrors the Python behaviour: OpenAI responses use the Responses API with JSON output, SQL is validated via a shared read-only guard, and retries/backoff are handled centrally so additional providers can plug in with consistent ergonomics.
+
 ### Phase 3: Backend Implementation 🚧
 
 - [ ] Port database models

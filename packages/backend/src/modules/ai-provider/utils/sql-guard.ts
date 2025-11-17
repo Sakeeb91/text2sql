@@ -40,6 +40,10 @@ export const isReadOnlySql = (sql: string): boolean => {
   }
 
   const [statement] = statements;
+  if (statement === undefined) {
+    return false;
+  }
+
   if (!statement.toLowerCase().startsWith('select')) {
     return false;
   }
