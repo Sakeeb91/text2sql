@@ -51,3 +51,14 @@ See `packages/backend/env-templates/.env.example` for a ready-to-edit template.
 ## Health Checks
 
 Every provider implementation inherits the default validation/health behaviour. Implementors can override `healthCheck()` to perform remote readiness checks. `AiProviderService` only caches providers that pass both validation and health, raising `ProviderValidationError` otherwise.
+
+## OpenAI Provider
+
+Location: `packages/backend/src/modules/ai-provider/providers/openai.provider.ts`
+
+- Uses the official `openai` SDK (`packages/backend` dependency) and the Responses API to request JSON-structured answers.
+- Shares the Python system prompt via `buildSqlSystemPrompt()` so the generated queries stay aligned across stacks.
+- Guards every response with the `sql-guard` helpers to ensure a single read-only `SELECT` statement before returning the result.
+- Parses the SDK’s multiple response shapes with `extractTextFromOpenAiResponse()` and surfaces `confidence` + usage metadata when present.
+- Retries rate-limit and transient failures with exponential backoff (`utils/retry.ts`) and maps SDK errors onto typed `ProviderError`s for observability.
+- Validates configuration by calling `models.retrieve` for the configured model and exercises `models.list` as a lightweight health check.
