@@ -55,4 +55,17 @@ describe('OpenAiProvider', () => {
     expect(result.sqlQuery).toBe('SELECT * FROM customers');
     expect(result.providerMetadata?.model).toBe('gpt-4o-mini');
   });
+
+  it('throws when response cannot be parsed', async () => {
+    client.responses.create.mockResolvedValue({
+      output_text: 'not-json',
+    });
+
+    await expect(
+      provider.generateSql({
+        question: 'List customers',
+        databaseSchema: 'schema',
+      })
+    ).rejects.toThrow(/valid JSON/i);
+  });
 });
