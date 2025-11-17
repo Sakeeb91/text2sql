@@ -106,4 +106,18 @@ describe('OpenAiProvider', () => {
     await expect(promise).resolves.toMatchObject({ sqlQuery: 'SELECT 1' });
     expect(client.responses.create).toHaveBeenCalledTimes(2);
   });
+
+  it('validates configuration via models.retrieve', async () => {
+    client.models.retrieve.mockResolvedValue({ id: 'gpt-4o-mini' });
+
+    await expect(provider.validateConfig()).resolves.toBe(true);
+    expect(client.models.retrieve).toHaveBeenCalledWith('gpt-4o-mini');
+  });
+
+  it('fails health check when listing models errors', async () => {
+    client.models.list.mockRejectedValue(new Error('offline'));
+
+    await expect(provider.healthCheck()).rejects.toThrow(/health check/i);
+    expect(client.models.list).toHaveBeenCalled();
+  });
 });
