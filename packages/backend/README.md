@@ -4,7 +4,7 @@ NestJS backend API for the Text-to-SQL application.
 
 ## Status
 
-🚧 **Under Development** - This package will be implemented in Phase 3 of the TypeScript migration.
+🚧 **Under Development** – Phase 2 delivered the multi-provider AI abstraction + OpenAI integration. The remaining NestJS modules (database/query APIs) land in Phase 3.
 
 ## Planned Features
 
@@ -17,7 +17,16 @@ NestJS backend API for the Text-to-SQL application.
 
 ## Development
 
-This package is currently a placeholder. Implementation will begin in Phase 3.1 (Issue #24).
+This package is currently a placeholder for the API modules. The AI provider infrastructure is available today; implementation of the remaining endpoints begins in Phase 3.1 (Issue #24).
+
+## AI Provider Module
+
+Located in `src/modules/ai-provider`.
+
+- `OpenAiProvider` uses the official `openai` SDK and the Responses API to generate JSON-structured SQL replies, reusing the Python system prompt plus strict read-only validation.
+- Exponential backoff + retry logic handle rate limiting automatically; `ProviderError` metadata includes request IDs/statuses when errors surface.
+- Configuration lives under `config/configuration.ts` and is validated at runtime via `AiProviderConfigService`.
+- Run `pnpm ts:test -- --runInBand` to execute the Vitest suite, including the mocked OpenAI provider specs under `test/ai-provider`.
 
 ### Environment Configuration
 
