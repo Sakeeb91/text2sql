@@ -68,4 +68,17 @@ describe('OpenAiProvider', () => {
       })
     ).rejects.toThrow(/valid JSON/i);
   });
+
+  it('rejects SQL that is not read-only', async () => {
+    client.responses.create.mockResolvedValue({
+      output_text: '{"sql": "DELETE FROM customers"}',
+    });
+
+    await expect(
+      provider.generateSql({
+        question: 'List customers',
+        databaseSchema: 'schema',
+      })
+    ).rejects.toThrow(/not read-only/i);
+  });
 });
