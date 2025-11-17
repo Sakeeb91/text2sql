@@ -180,15 +180,19 @@ export class OpenAiProvider extends BaseAiProvider {
     const temperature = request.temperature ?? this.baseTemperature;
     const input = this.buildMessages(request.databaseSchema ?? '', question);
 
+    const responseOptions: Parameters<OpenAIClient['responses']['create']>[0] = {
+      model: this.model,
+      temperature,
+      response_format: { type: 'json_object' },
+      input,
+    };
+
+    if (typeof this.config.maxTokens === 'number') {
+      responseOptions.max_output_tokens = this.config.maxTokens;
+    }
+
     const response = await this.executeWithRetry(
-      () =>
-        this.client.responses.create({
-          model: this.model,
-          temperature,
-          response_format: { type: 'json_object' },
-          max_output_tokens: this.config.maxTokens,
-          input,
-        }),
+      () => this.client.responses.create(responseOptions),
       'generateSql'
     );
 
