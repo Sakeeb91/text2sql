@@ -1,6 +1,7 @@
 import { AiProviderConfig, AiProviderType } from '@text2sql/shared';
 import type OpenAIClient from 'openai';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { APIError } from 'openai/error';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { OpenAiProvider } from '../../src/modules/ai-provider/providers/openai.provider';
 
@@ -38,6 +39,10 @@ describe('OpenAiProvider', () => {
   beforeEach(() => {
     client = createMockClient();
     provider = new OpenAiProvider(baseConfig, client as unknown as OpenAIClient);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('generates SQL from structured response', async () => {
@@ -80,5 +85,25 @@ describe('OpenAiProvider', () => {
         databaseSchema: 'schema',
       })
     ).rejects.toThrow(/not read-only/i);
+  });
+
+  it('retries on rate limits and eventually succeeds', async () => {
+    const headers = { 'x-request-id': 'retry' } as Headers;
+    const rateLimitError = new APIError(429, { code: 'rate_limit_exceeded' }, 'Too many', headers);
+    client.responses.create
+      .mockRejectedValueOnce(rateLimitError)
+      .mockResolvedValue({ output_text: '{"sql": "SELECT 1"}' });
+
+    vi.useFakeTimers();
+    const promise = provider.generateSql({
+      question: 'ping',
+      databaseSchema: 'schema',
+    });
+
+    await vi.runOnlyPendingTimersAsync();
+    vi.useRealTimers();
+
+    await expect(promise).resolves.toMatchObject({ sqlQuery: 'SELECT 1' });
+    expect(client.responses.create).toHaveBeenCalledTimes(2);
   });
 });
