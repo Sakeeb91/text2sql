@@ -113,8 +113,14 @@ export class OpenAiProvider extends BaseAiProvider {
       });
     }
 
+    const confidence =
+      typeof (payload as { confidence?: unknown }).confidence === 'number'
+        ? (payload as { confidence: number }).confidence
+        : undefined;
+
     return {
       sqlQuery: sql,
+      confidence,
       providerMetadata: {
         model: (response as { model?: string }).model ?? this.model,
         usage: (response as { usage?: unknown }).usage,
