@@ -993,6 +993,8 @@ Full instructions in [DEPLOYMENT.md](docs/DEPLOYMENT.md).
   - [x] Provider configuration and switching (factory + module wiring)
   - [x] Document provider workflow, configuration, and validation
 
+> **Phase 2 highlight:** The NestJS backend now includes a production-ready OpenAI provider that reuses the Python prompt, enforces JSON responses, validates read-only SQL, and retries rate limits with exponential backoff. See `docs/ai-provider-layer.md` for implementation notes.
+
 #### In Progress
 
 - [ ] **Phase 3**: NestJS Backend Implementation
