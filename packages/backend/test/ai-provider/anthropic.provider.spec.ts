@@ -1,4 +1,5 @@
 import type Anthropic from '@anthropic-ai/sdk';
+import { APIError } from '@anthropic-ai/sdk';
 import { AiProviderConfig, AiProviderType } from '@text2sql/shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -74,6 +75,32 @@ describe('AnthropicProvider', () => {
 
     expect(result.sqlQuery).toBe('SELECT id FROM orders');
     expect(result.confidence).toBeCloseTo(0.81);
+  });
+
+  it('retries on rate limits before succeeding', async () => {
+    const headers = new Headers();
+    const rateLimit = new APIError(
+      429,
+      { type: 'rate_limit_error', message: 'Rate limited' },
+      'Rate limited',
+      headers
+    );
+
+    client.messages.create
+      .mockRejectedValueOnce(rateLimit)
+      .mockResolvedValue({ content: [{ type: 'text', text: '{"sql": "SELECT 1"}' }] });
+
+    vi.useFakeTimers();
+    const promise = provider.generateSql({
+      question: 'ping',
+      databaseSchema: 'schema',
+    });
+
+    await vi.runOnlyPendingTimersAsync();
+    vi.useRealTimers();
+
+    await expect(promise).resolves.toMatchObject({ sqlQuery: 'SELECT 1' });
+    expect(client.messages.create).toHaveBeenCalledTimes(2);
   });
 
   it('rejects non read-only SQL', async () => {
