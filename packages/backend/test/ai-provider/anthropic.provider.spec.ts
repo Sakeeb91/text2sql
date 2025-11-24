@@ -1,0 +1,79 @@
+import type Anthropic from '@anthropic-ai/sdk';
+import { AiProviderConfig, AiProviderType } from '@text2sql/shared';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { AnthropicProvider } from '../../src/modules/ai-provider/providers/anthropic.provider';
+
+const baseConfig: AiProviderConfig = {
+  type: AiProviderType.ANTHROPIC,
+  apiKey: 'test-key',
+  model: 'claude-3-5-sonnet-20241022',
+  temperature: 0.2,
+};
+
+interface MockAnthropicClient {
+  messages: {
+    create: ReturnType<typeof vi.fn>;
+  };
+  models: {
+    retrieve: ReturnType<typeof vi.fn>;
+    list: ReturnType<typeof vi.fn>;
+  };
+}
+
+const createMockClient = (): MockAnthropicClient => ({
+  messages: {
+    create: vi.fn(),
+  },
+  models: {
+    retrieve: vi.fn(),
+    list: vi.fn(),
+  },
+});
+
+describe('AnthropicProvider', () => {
+  let client: MockAnthropicClient;
+  let provider: AnthropicProvider;
+
+  beforeEach(() => {
+    client = createMockClient();
+    provider = new AnthropicProvider(baseConfig, client as unknown as Anthropic);
+  });
+
+  it('generates SQL from Claude responses', async () => {
+    client.messages.create.mockResolvedValue({
+      content: [{ type: 'text', text: '{"sql": "SELECT * FROM customers", "confidence": 0.92}' }],
+      model: 'claude-3-5-sonnet-20241022',
+      usage: { input_tokens: 10, output_tokens: 20 },
+    });
+
+    const result = await provider.generateSql({
+      question: 'List all customers',
+      databaseSchema: 'Table: customers',
+    });
+
+    expect(result.sqlQuery).toBe('SELECT * FROM customers');
+    expect(result.confidence).toBeCloseTo(0.92);
+    expect(result.providerMetadata?.model).toBe('claude-3-5-sonnet-20241022');
+  });
+
+  it('rejects non read-only SQL', async () => {
+    client.messages.create.mockResolvedValue({
+      content: [{ type: 'text', text: '{"sql": "DELETE FROM customers"}' }],
+    });
+
+    await expect(
+      provider.generateSql({
+        question: 'drop customers',
+        databaseSchema: 'Table: customers',
+      })
+    ).rejects.toThrow(/read-only/i);
+  });
+
+  it('validates configuration using models.retrieve', async () => {
+    client.models.retrieve.mockResolvedValue({ id: 'claude-3-5-sonnet-20241022' });
+
+    await expect(provider.validateConfig()).resolves.toBe(true);
+    expect(client.models.retrieve).toHaveBeenCalledWith('claude-3-5-sonnet-20241022');
+  });
+});
