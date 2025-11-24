@@ -23,6 +23,7 @@
   "author": "Sakeeb Rahman <rahman.sakeeb@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.1",
     "@nestjs/common": "^10.3.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.3.0",
