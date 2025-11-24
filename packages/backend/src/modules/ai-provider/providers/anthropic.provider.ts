@@ -85,7 +85,7 @@ export class AnthropicProvider extends BaseAiProvider {
     return {
       model: this.model,
       system: buildClaudeSqlPrompt(schema),
-      max_output_tokens: this.maxTokens,
+      max_tokens: this.maxTokens,
       temperature,
       response_format: { type: 'json_object' },
       messages: [
