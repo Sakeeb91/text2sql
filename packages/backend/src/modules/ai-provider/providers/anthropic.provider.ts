@@ -14,10 +14,12 @@ import {
 
 import { BaseAiProvider } from '../base-ai-provider';
 import { buildClaudeSqlPrompt } from '../prompts/claude-sql-prompt';
+import { classifyAnthropicError } from '../utils/anthropic-error';
 import {
   extractTextFromAnthropicResponse,
   extractJsonObject,
 } from '../utils/anthropic-response-parser';
+import { calculateBackoffDelay, sleep } from '../utils/retry';
 import { isReadOnlySql } from '../utils/sql-guard';
 
 import {
@@ -140,8 +142,51 @@ export class AnthropicProvider extends BaseAiProvider {
     const temperature = request.temperature ?? this.baseTemperature;
     const params = this.buildRequest(question, request.databaseSchema ?? '', temperature);
 
-    const response = await this.client.messages.create(params);
+    const response = await this.executeWithRetry(
+      () => this.client.messages.create(params),
+      'generateSql'
+    );
     return this.parseResponse(response);
+  }
+
+  private async executeWithRetry<T>(
+    operation: () => Promise<T>,
+    operationName: string
+  ): Promise<T> {
+    for (let attempt = 0; attempt <= this.options.maxRetries; attempt += 1) {
+      try {
+        return await operation();
+      } catch (error) {
+        const classification = classifyAnthropicError(error);
+        const shouldRetry = classification.retryable && attempt < this.options.maxRetries;
+        if (!shouldRetry) {
+          throw new ProviderError(
+            classification.message,
+            this.type,
+            {
+              operation: operationName,
+              metadata: {
+                status: classification.status,
+                type: classification.type,
+              },
+            },
+            error instanceof Error ? error : undefined
+          );
+        }
+
+        const delay = calculateBackoffDelay(attempt, {
+          baseDelayMs: this.options.baseRetryDelayMs,
+          maxDelayMs: this.options.maxRetryDelayMs,
+          jitterMs: 200,
+        });
+
+        await sleep(delay);
+      }
+    }
+
+    throw new ProviderError('Anthropic request failed after retries', this.type, {
+      operation: operationName,
+    });
   }
 
   override async validateConfig(): Promise<boolean> {
