@@ -57,6 +57,25 @@ describe('AnthropicProvider', () => {
     expect(result.providerMetadata?.model).toBe('claude-3-5-sonnet-20241022');
   });
 
+  it('parses JSON responses wrapped in code fences', async () => {
+    client.messages.create.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '```json\n{"sql": "SELECT id FROM orders", "confidence": 0.81}\n```',
+        },
+      ],
+    });
+
+    const result = await provider.generateSql({
+      question: 'Show order ids',
+      databaseSchema: 'Table: orders',
+    });
+
+    expect(result.sqlQuery).toBe('SELECT id FROM orders');
+    expect(result.confidence).toBeCloseTo(0.81);
+  });
+
   it('rejects non read-only SQL', async () => {
     client.messages.create.mockResolvedValue({
       content: [{ type: 'text', text: '{"sql": "DELETE FROM customers"}' }],
