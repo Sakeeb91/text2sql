@@ -103,6 +103,30 @@ describe('AnthropicProvider', () => {
     expect(client.messages.create).toHaveBeenCalledTimes(2);
   });
 
+  it('retries when the API is overloaded', async () => {
+    const overloaded = new APIError(
+      529,
+      { type: 'overloaded_error', message: 'Overloaded' },
+      'Overloaded',
+      new Headers()
+    );
+
+    client.messages.create
+      .mockRejectedValueOnce(overloaded)
+      .mockResolvedValue({ content: [{ type: 'text', text: '{"sql": "SELECT now()"}' }] });
+
+    vi.useFakeTimers();
+    const promise = provider.generateSql({
+      question: 'ping',
+      databaseSchema: 'schema',
+    });
+    await vi.runOnlyPendingTimersAsync();
+    vi.useRealTimers();
+
+    await expect(promise).resolves.toMatchObject({ sqlQuery: 'SELECT now()' });
+    expect(client.messages.create).toHaveBeenCalledTimes(2);
+  });
+
   it('fails fast on authentication errors', async () => {
     const headers = new Headers();
     const authError = new APIError(
