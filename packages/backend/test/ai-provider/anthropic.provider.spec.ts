@@ -77,6 +77,15 @@ describe('AnthropicProvider', () => {
     expect(result.confidence).toBeCloseTo(0.81);
   });
 
+  it('requires a question before generating SQL', async () => {
+    await expect(
+      provider.generateSql({
+        question: '   ',
+        databaseSchema: 'schema',
+      })
+    ).rejects.toThrow(/question must be provided/i);
+  });
+
   it('retries on rate limits before succeeding', async () => {
     const headers = new Headers();
     const rateLimit = new APIError(
