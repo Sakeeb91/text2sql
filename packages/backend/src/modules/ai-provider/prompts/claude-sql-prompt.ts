@@ -14,7 +14,7 @@ Database Schema:
 Respond with JSON only—no explanations or extra text.`;
 
 const formatSchema = (schema: string): string => {
-  const trimmed = schema.trim();
+  const trimmed = typeof schema === 'string' ? schema.trim() : '';
   return trimmed.length > 0 ? trimmed : FALLBACK_SCHEMA;
 };
 
