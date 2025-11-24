@@ -71,7 +71,7 @@ export class AnthropicProvider extends BaseAiProvider {
   }
 
   private get maxTokens(): number {
-    if (typeof this.config.maxTokens === 'number') {
+    if (typeof this.config.maxTokens === 'number' && this.config.maxTokens > 0) {
       return this.config.maxTokens;
     }
     return this.options.defaultMaxOutputTokens;
