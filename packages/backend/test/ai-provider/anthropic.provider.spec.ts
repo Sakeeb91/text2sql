@@ -142,4 +142,11 @@ describe('AnthropicProvider', () => {
     await expect(provider.validateConfig()).resolves.toBe(true);
     expect(client.models.retrieve).toHaveBeenCalledWith('claude-3-5-sonnet-20241022');
   });
+
+  it('surfaces validation errors from the API', async () => {
+    client.models.retrieve.mockRejectedValue(new Error('missing'));
+
+    await expect(provider.validateConfig()).rejects.toThrow(/validate/i);
+    expect(client.models.retrieve).toHaveBeenCalledWith('claude-3-5-sonnet-20241022');
+  });
 });
