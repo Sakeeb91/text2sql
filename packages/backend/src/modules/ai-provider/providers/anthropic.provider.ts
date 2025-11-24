@@ -8,6 +8,7 @@ import {
   AiProviderType,
   ProviderConfigurationError,
   ProviderError,
+  ProviderValidationError,
   SqlGenerationRequest,
   SqlGenerationResponse,
 } from '@text2sql/shared';
@@ -199,6 +200,33 @@ export class AnthropicProvider extends BaseAiProvider {
       );
     }
 
-    return true;
+    try {
+      await this.client.models.retrieve(this.model);
+      return true;
+    } catch (error) {
+      throw new ProviderValidationError(
+        this.type,
+        'Failed to validate Anthropic provider configuration',
+        {
+          operation: 'models.retrieve',
+          metadata: { model: this.model },
+        },
+        error instanceof Error ? error : undefined
+      );
+    }
+  }
+
+  override async healthCheck(): Promise<boolean> {
+    try {
+      await this.client.models.list({ limit: 1 });
+      return true;
+    } catch (error) {
+      throw new ProviderValidationError(
+        this.type,
+        'Anthropic provider health check failed',
+        { operation: 'models.list' },
+        error instanceof Error ? error : undefined
+      );
+    }
   }
 }
