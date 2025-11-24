@@ -62,3 +62,14 @@ Location: `packages/backend/src/modules/ai-provider/providers/openai.provider.ts
 - Parses the SDK’s multiple response shapes with `extractTextFromOpenAiResponse()` and surfaces `confidence` + usage metadata when present.
 - Retries rate-limit and transient failures with exponential backoff (`utils/retry.ts`) and maps SDK errors onto typed `ProviderError`s for observability.
 - Validates configuration by calling `models.retrieve` for the configured model and exercises `models.list` as a lightweight health check.
+
+## Anthropic Provider
+
+Location: `packages/backend/src/modules/ai-provider/providers/anthropic.provider.ts`
+
+- Uses the official `@anthropic-ai/sdk` Messages API with `response_format: { type: 'json_object' }` and a Claude-specific prompt (`prompts/claude-sql-prompt.ts`).
+- Parses Claude text blocks via `anthropic-response-parser` and guards SQL with the shared `sql-guard` utilities.
+- Retries rate limits and overloads with exponential backoff, classifying errors with `anthropic-error`.
+- Surfaces usage/stop_reason metadata and optional `confidence` returned by the model.
+- Validates configuration through `models.retrieve` and uses `models.list` for health checks.
+- Default model and temperature can be overridden with `ANTHROPIC_MODEL`, `ANTHROPIC_TEMPERATURE`, and `ANTHROPIC_MAX_TOKENS`.
