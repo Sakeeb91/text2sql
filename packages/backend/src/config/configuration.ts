@@ -75,7 +75,7 @@ export const configuration = (): AppConfig => {
   const anthropicConfig = buildProviderConfig(AiProviderType.ANTHROPIC, {
     apiKey: process.env.ANTHROPIC_API_KEY ?? '',
     baseUrl: process.env.ANTHROPIC_BASE_URL,
-    model: process.env.ANTHROPIC_MODEL ?? 'claude-3-5-sonnet-20240620',
+    model: process.env.ANTHROPIC_MODEL ?? 'claude-3-5-sonnet-20241022',
     temperature: parseNumber(process.env.ANTHROPIC_TEMPERATURE, 0.2),
     maxTokens: parseNumber(process.env.ANTHROPIC_MAX_TOKENS),
   });

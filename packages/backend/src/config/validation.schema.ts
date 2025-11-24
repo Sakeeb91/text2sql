@@ -18,7 +18,7 @@ export const validationSchema = Joi.object({
   OPENAI_MAX_TOKENS: Joi.number().integer().positive().optional(),
   ANTHROPIC_API_KEY: Joi.string().allow('').default(''),
   ANTHROPIC_BASE_URL: Joi.string().uri().optional(),
-  ANTHROPIC_MODEL: Joi.string().default('claude-3-5-sonnet-20240620'),
+  ANTHROPIC_MODEL: Joi.string().default('claude-3-5-sonnet-20241022'),
   ANTHROPIC_TEMPERATURE: Joi.number().min(0).max(2).default(0.2),
   ANTHROPIC_MAX_TOKENS: Joi.number().integer().positive().optional(),
   CUSTOM_API_KEY: Joi.string().allow('').default(''),
