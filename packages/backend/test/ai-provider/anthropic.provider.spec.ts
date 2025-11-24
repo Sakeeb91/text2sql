@@ -103,6 +103,26 @@ describe('AnthropicProvider', () => {
     expect(client.messages.create).toHaveBeenCalledTimes(2);
   });
 
+  it('fails fast on authentication errors', async () => {
+    const headers = new Headers();
+    const authError = new APIError(
+      401,
+      { type: 'authentication_error', message: 'bad key' },
+      'bad key',
+      headers
+    );
+
+    client.messages.create.mockRejectedValue(authError);
+
+    await expect(
+      provider.generateSql({
+        question: 'Hello',
+        databaseSchema: 'schema',
+      })
+    ).rejects.toThrow(/bad key/i);
+    expect(client.messages.create).toHaveBeenCalledTimes(1);
+  });
+
   it('rejects non read-only SQL', async () => {
     client.messages.create.mockResolvedValue({
       content: [{ type: 'text', text: '{"sql": "DELETE FROM customers"}' }],
