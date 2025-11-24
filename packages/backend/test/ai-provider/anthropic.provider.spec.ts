@@ -149,4 +149,11 @@ describe('AnthropicProvider', () => {
     await expect(provider.validateConfig()).rejects.toThrow(/validate/i);
     expect(client.models.retrieve).toHaveBeenCalledWith('claude-3-5-sonnet-20241022');
   });
+
+  it('fails health check when models list is unavailable', async () => {
+    client.models.list.mockRejectedValue(new Error('offline'));
+
+    await expect(provider.healthCheck()).rejects.toThrow(/health check/i);
+    expect(client.models.list).toHaveBeenCalled();
+  });
 });
