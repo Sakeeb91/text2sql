@@ -113,6 +113,8 @@ Both implementations will coexist, allowing you to choose the stack that best fi
 
 The Nest backend now loads provider credentials from environment variables such as `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `CUSTOM_API_KEY`. Select the active provider with `AI_PROVIDER_DEFAULT` and optionally override `*_MODEL`, `*_BASE_URL`, `*_TEMPERATURE`, and `*_MAX_TOKENS`. See `packages/backend/env-templates/.env.example` for a complete template and [docs/ai-provider-layer.md](docs/ai-provider-layer.md) for a high-level overview.
 
+- **Anthropic defaults**: `claude-3-5-sonnet-20241022`, `ANTHROPIC_TEMPERATURE=0.2`, and `ANTHROPIC_MAX_TOKENS` defaulting to 1024. The backend uses Claude JSON mode and validates configuration via `models.retrieve`.
+
 ## Architecture
 
 ### Python/FastAPI Architecture (Current Production)
